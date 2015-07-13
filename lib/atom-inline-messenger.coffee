@@ -42,24 +42,23 @@ module.exports = Messenger =
 
   longestLineInMarker: (activeEditor, marker) ->
     screenRange = marker.getScreenRange()
-
     longestLineRowOffset = 0
     longestLineLength = 0
     offset = 0
-
-    console.log "start: " +screenRange.start.row
-    console.log "end: " + screenRange.end.row
-
     for row in [screenRange.start.row..screenRange.end.row]
-      console.log "counting" + row
       currentRowLength = activeEditor.lineTextForScreenRow(row).length
       if longestLineLength < currentRowLength
         longestLineLength = currentRowLength
         longestLineRowOffset = offset
       offset = offset + 1
-
-    console.log "longest line offest #{longestLineRowOffset}"
     longestLineRowOffset
+
+  firstLineFirstColOfRange: (range) ->
+    gutterAnchorRange = [range[0].slice(), range[1].slice()]
+    gutterAnchorRange[0][1] = 0
+    gutterAnchorRange[1][0] = gutterAnchorRange[0][0]
+    gutterAnchorRange[1][1] = 0
+    return gutterAnchorRange
 
   render: ->
     activeEditor = atom.workspace.getActiveTextEditor()
@@ -67,13 +66,11 @@ module.exports = Messenger =
 
       mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never'})
       anchor = mark
-
+      gutterAnchor = activeEditor.markBufferRange(@firstLineFirstColOfRange(msg.range), {invalidate: 'never'})
       longestLine = @longestLineInMarker(activeEditor, mark)
-      console.log longestLine
 
       positioning = atom.config.get('atom-inline-messaging.messagePositioning')
       if positioning == "Below"
-        # msgClassList.push("is-below")
         anchorRange = [msg.range[0].slice(), msg.range[1].slice()]
 
         # set line to last line in selection
@@ -85,12 +82,12 @@ module.exports = Messenger =
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
 
       else if positioning == "Right"
-        # msgClassList.push("is-right")
         anchorRange = [msg.range[0].slice(), msg.range[1].slice()]
         anchorRange[0][0] = anchorRange[0][0]+longestLine
         anchorRange[0][1] = 80
         anchorRange[1] = anchorRange[0].slice()
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
+
 
       bubble = activeEditor.decorateMarker(
         anchor
@@ -106,7 +103,13 @@ module.exports = Messenger =
           class: 'inline-message-selection-highlight'
         }
       )
-      lineheight = highlight.displayBuffer.lineHeightInPixels
+      highlight = activeEditor.decorateMarker(
+        gutterAnchor
+        {
+          type: 'line-number',
+          class: 'inline-message-gutter'
+        }
+      )
 
 
   renderElement: (element, lineAdjustment) ->

@@ -7,7 +7,6 @@
    top:(@component-line-height - 4px)*@i;
 }
 
-
 .message-style {
   background-color: #DDD;
   color: #222;
@@ -17,8 +16,6 @@
   &.is-right {
     position: relative;
     margin-left: 25px;
-    // margin-top: 6px;
-    // margin-top: -1*@component-line-height;
     &.up-0 {
       .line-adjust(-1);
     }
@@ -40,8 +37,6 @@
   }
 }
 
-
-
 #inline-message {
   .message-style();
   &.style-code {
@@ -52,7 +47,6 @@
 
 #inline-suggestion {
   .message-style();
-
   .suggested {
     font-family: Courier;
     white-space: pre;
@@ -67,3 +61,26 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
 
 
 // @component-line-height
+
+
+
+atom-text-editor::shadow .inline-message-gutter .icon-right{
+  visibility: visible;
+  &::before{
+    content: "!";
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+    background-color: red;
+    border-radius: 7.5px;
+    padding-left: -2px;
+    width: 15px;
+    height: 15px;
+    margin-left: -2px;
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 15px;
+
+  }
+}
+
