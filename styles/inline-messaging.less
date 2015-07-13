@@ -13,6 +13,7 @@
   padding: 2px 5px;
   border-radius: 3px;
   white-space: pre;
+  opacity: 0;
   .badge {
     padding: 2px 5px;
     border-radius: 3px;
@@ -33,6 +34,11 @@
   .message {
     display: inline-block;
   }
+  &.is-selected {
+    opacity: 1;
+  }
+
+
   &.is-right {
     position: relative;
     margin-left: 25px;
@@ -76,6 +82,11 @@
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
     background-color: #555;
+  }
+  &.is-selected {
+    .region {
+      background-color: #666;
+    }
   }
 }
 

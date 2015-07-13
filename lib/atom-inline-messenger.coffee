@@ -27,6 +27,8 @@ module.exports = Messenger =
     # Register command that toggles this view
     # @subscriptions.add atom.commands.add 'atom-workspace', 'test-package:toggle': => @toggle()
 
+    @cursorMovementSubscription()
+
     atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
       # `observe` calls immediately and every time the value is changed 
       @render()
@@ -46,7 +48,10 @@ module.exports = Messenger =
     activeEditor = atom.workspace.getActiveTextEditor()
 
     activeEditor.onDidChangeCursorPosition (event) =>
-      found = activeEditor.findMarkers({containsBufferPosition:event.newBufferPostion})
+      found = activeEditor.findMarkers({
+                        inlineMsg:true, 
+                        containsBufferPosition:event["newBufferPosition"]
+                    })
       if found.length != 0
         @render()
 
@@ -82,9 +87,23 @@ module.exports = Messenger =
   render: ->
     @clear()
     activeEditor = atom.workspace.getActiveTextEditor()
+    cursorBufferPosition = activeEditor.getCursorBufferPosition()
+
+
     @rendered = @messages.map (msg) =>
     
-      mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never'})
+      mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never', inlineMsg: true})
+
+
+      selected = mark.getBufferRange().containsPoint(cursorBufferPosition)
+
+      # selected = false
+
+      selectedClass = ""
+      if selected 
+        selectedClass = "is-selected"
+
+
       anchor = mark
       gutterAnchor = activeEditor.markBufferRange(@firstLineFirstColOfRange(msg.range), {invalidate: 'never'})
       longestLine = @longestLineInMarker(activeEditor, mark)
@@ -109,18 +128,20 @@ module.exports = Messenger =
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
 
 
+
       bubble = activeEditor.decorateMarker(
         anchor
         {
           type: 'overlay',
-          item: @renderElement(msg, longestLine)
+          class: 'inline-message'
+          item: @renderElement(msg, selected, longestLine)
         }
       )
       highlight = activeEditor.decorateMarker(
         mark
         {
           type: 'highlight',
-          class: 'inline-message-selection-highlight'
+          class: "inline-message-selection-highlight"
         }
       )
       gutter = activeEditor.decorateMarker(
@@ -138,13 +159,13 @@ module.exports = Messenger =
 
 
 
-  renderElement: (element, lineAdjustment) ->
+  renderElement: (element, selected, lineAdjustment) ->
     if element.type == 'message'
-      return @renderMessage(element, lineAdjustment)
+      return @renderMessage(element, selected, lineAdjustment)
     else if element.type == 'suggestion'
-      return @renderSuggestion(element, lineAdjustment)
+      return @renderSuggestion(element, selected, lineAdjustment)
 
-  renderMessage: (msg, lineAdjustment) ->
+  renderMessage: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-message'
     bubble.classList.add("style-" + msg.style)
@@ -156,11 +177,13 @@ module.exports = Messenger =
       bubble.classList.add("is-right")
       bubble.classList.add("up-#{lineAdjustment}")
 
+    if selected == true
+      bubble.classList.add("is-selected")
 
     bubble.appendChild Message.fromMsg(msg)
     bubble
 
-  renderSuggestion: (msg, lineAdjustment) ->
+  renderSuggestion: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-suggestion'
     positioning = atom.config.get('atom-inline-messaging.messagePositioning')
@@ -169,6 +192,10 @@ module.exports = Messenger =
     else if positioning == "Right"
       bubble.classList.add("is-right")
       bubble.classList.add("up-#{lineAdjustment}")
+
+    if selected == true
+      bubble.classList.add("is-selected")
+
     bubble.appendChild Suggestion.fromSuggestion(msg)
     bubble
 
