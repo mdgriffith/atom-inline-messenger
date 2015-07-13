@@ -1,0 +1,47 @@
+#inline-message {
+  background-color: #DDD;
+  color: #222;
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: pre;
+  &.style-code {
+    font-family: Courier;
+    color: blue;
+  }
+  &.in-list {
+    margin-left:800px;
+    background-color: yellow;
+  }
+}
+
+#inline-suggestion {
+  position: relative;
+  background-color: #DDD;
+  color: #222;
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: pre;
+  // overflow: hidden;
+  .suggested {
+    font-family: Courier;
+    background-color: #BBB;
+    whitespace: pre;
+    padding: 2px 5px;
+    border-radius: 3px;
+    // position: relative;
+    // left: 2px;
+    // margin-left: -7px;
+    // margin-right: -3px;
+    // margin-bottom: -3px;
+  }
+  &.in-list {
+    margin-left: 800px;
+    // background-color: yellow;
+  }
+}
+
+atom-text-editor::shadow .highlights .inline-message-selection-highlight {
+  .region {
+    background-color: #555;
+  }
+}

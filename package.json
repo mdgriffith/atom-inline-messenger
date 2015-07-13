@@ -1,0 +1,24 @@
+{
+  "name": "atom-inline-messaging",
+  "main": "./lib/atom-inline-messenger.coffee",
+  "version": "0.1.0",
+  "description": "Inline Messaging in the Atom Editor",
+  "repository": "https://github.com/mdgriffith/atom-inline-messaging",
+  "license": "MIT",
+  "author":"mdgriffith",
+  "engines": {
+    "atom": ">=0.174.0 <2.0.0"
+  },
+  "dependencies": {
+
+  },
+  "providedServices": {
+    "inline-messaging": {
+      "description": "A manager of inline messages.",
+      "versions": {
+        "0.1.0": "provideInlineMessenger"
+      }
+    }
+  }
+}
+
