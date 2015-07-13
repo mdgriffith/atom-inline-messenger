@@ -1,42 +1,61 @@
-#inline-message {
+
+@import "ui-variables";
+
+
+
+.line-adjust(@i){
+   top:(@component-line-height - 4px)*@i;
+}
+
+
+.message-style {
   background-color: #DDD;
   color: #222;
   padding: 2px 5px;
   border-radius: 3px;
   white-space: pre;
+  &.is-right {
+    position: relative;
+    margin-left: 25px;
+    // margin-top: 6px;
+    // margin-top: -1*@component-line-height;
+    &.up-0 {
+      .line-adjust(-1);
+    }
+    &.up-1 {
+      .line-adjust(-2);
+    }
+    &.up-2 {
+      .line-adjust(-3);
+    }
+    &.up-3 {
+      .line-adjust(-4);
+    }
+    &.up-4 {
+      .line-adjust(-4);
+    }
+    &.up-5 {
+      .line-adjust(-5);
+    }
+  }
+}
+
+
+
+#inline-message {
+  .message-style();
   &.style-code {
     font-family: Courier;
     color: blue;
   }
-  &.in-list {
-    margin-left:800px;
-    background-color: yellow;
-  }
 }
 
 #inline-suggestion {
-  position: relative;
-  background-color: #DDD;
-  color: #222;
-  padding: 2px 5px;
-  border-radius: 3px;
-  white-space: pre;
-  // overflow: hidden;
+  .message-style();
+
   .suggested {
     font-family: Courier;
-    background-color: #BBB;
-    whitespace: pre;
-    padding: 2px 5px;
-    border-radius: 3px;
-    // position: relative;
-    // left: 2px;
-    // margin-left: -7px;
-    // margin-right: -3px;
-    // margin-bottom: -3px;
-  }
-  &.in-list {
-    margin-left: 800px;
-    // background-color: yellow;
+    white-space: pre;
   }
 }
 
@@ -45,3 +64,6 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
     background-color: #555;
   }
 }
+
+
+// @component-line-height
