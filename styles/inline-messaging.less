@@ -13,6 +13,26 @@
   padding: 2px 5px;
   border-radius: 3px;
   white-space: pre;
+  .badge {
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-right: 5px;
+    &.severity-info {
+      background-color: @background-color-info;
+    }
+    &.severity-warning {
+      background-color: @background-color-warning;
+    }
+    &.severity-error {
+      background-color: @background-color-error;
+    }
+    &.severity-suggestion {
+      background-color: @background-color-success;
+    }
+  }
+  .message {
+    display: inline-block;
+  }
   &.is-right {
     position: relative;
     margin-left: 25px;
@@ -59,19 +79,14 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   }
 }
 
-
-// @component-line-height
-
-
-
-atom-text-editor::shadow .inline-message-gutter .icon-right{
+atom-text-editor::shadow .inline-message-gutter .icon-right {
   visibility: visible;
   &::before{
     content: "!";
     color: white;
     font-size: 0.9em;
     font-weight: bold;
-    background-color: red;
+    background-color: @background-color-info;
     border-radius: 7.5px;
     padding-left: -2px;
     width: 15px;
@@ -82,5 +97,41 @@ atom-text-editor::shadow .inline-message-gutter .icon-right{
     line-height: 15px;
 
   }
+  
 }
+
+atom-text-editor::shadow .inline-message-gutter {
+  &.severity-info {
+     .icon-right {
+        &::before {
+            background-color: @background-color-info;
+        }
+      }
+  }
+  &.severity-warning {
+     .icon-right {
+        &::before {
+            background-color: @background-color-warning;
+        }
+      }
+  }
+  &.severity-error {
+     .icon-right {
+        &::before {
+            background-color: @background-color-error;
+        }
+      }
+  }
+  &.severity-suggestion {
+     .icon-right {
+        &::before {
+            content: "?";
+            background-color: @background-color-success;
+        }
+      }
+  }
+
+ 
+}
+
 

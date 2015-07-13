@@ -107,7 +107,7 @@ module.exports = Messenger =
         gutterAnchor
         {
           type: 'line-number',
-          class: 'inline-message-gutter'
+          class: "inline-message-gutter severity-#{msg.severity}" 
         }
       )
 
@@ -146,12 +146,13 @@ module.exports = Messenger =
     bubble.appendChild Suggestion.fromSuggestion(msg)
     bubble
 
-  message: ({start, end, content, style}) ->
+  message: ({start, end, content, style, severity}) ->
     @messages.push
       type: 'message'
       range: [start, end]
       content: content
       style: style
+      severity: severity
     @render()
 
   suggest: ({start, end, message, suggestedCode, style}) ->
@@ -161,6 +162,7 @@ module.exports = Messenger =
       message: message
       suggestedCode: suggestedCode
       style: style
+      severity: "suggestion"
     @render()
 
     # TextBuffer.setTextInRange(range, text)

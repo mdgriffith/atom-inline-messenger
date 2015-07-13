@@ -3,11 +3,17 @@ class MessageView extends HTMLElement
   initialize: (msg) ->
     @classList.add('inline-message')
 
-    # Create message element
+    badge = document.createElement('span')
+    badge.textContent = msg.severity
+    badge.classList.add("badge")
+    badge.classList.add("severity-#{msg.severity}")
+    @appendChild(badge)
+
     message = document.createElement('div')
     message.textContent = msg.content
     message.classList.add('message')
     @appendChild(message)
+    
     this
 
   # Returns an object that can be retrieved when package is activated

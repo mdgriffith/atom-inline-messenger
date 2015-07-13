@@ -3,6 +3,13 @@ class SuggestionView extends HTMLElement
   initialize: (msg) ->
     @classList.add('inline-suggestion')
 
+
+    badge = document.createElement('span')
+    badge.textContent = msg.severity
+    badge.classList.add("badge")
+    badge.classList.add("severity-#{msg.severity}")
+    @appendChild(badge)
+
     # Create message element
     message = document.createElement('div')
     message.textContent = msg.message
