@@ -16,6 +16,7 @@ module.exports = Messenger =
   modalPanel: null
   subscriptions: null
   messages:[]
+  rendered:[]
 
 
   activate: (state) ->
@@ -24,7 +25,7 @@ module.exports = Messenger =
     @subscriptions = new CompositeDisposable
 
     # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'test-package:toggle': => @toggle()
+    # @subscriptions.add atom.commands.add 'atom-workspace', 'test-package:toggle': => @toggle()
 
     atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
       # `observe` calls immediately and every time the value is changed 
@@ -39,6 +40,16 @@ module.exports = Messenger =
 
   serialize: ->
     messageViewState: @messageView.serialize()
+
+
+  cursorMovementSubscription: () ->
+    activeEditor = atom.workspace.getActiveTextEditor()
+
+    activeEditor.onDidChangeCursorPosition (event) =>
+      found = activeEditor.findMarkers({containsBufferPosition:event.newBufferPostion})
+      if found.length != 0
+        @render()
+
 
   longestLineInMarker: (activeEditor, marker) ->
     screenRange = marker.getScreenRange()
@@ -60,10 +71,19 @@ module.exports = Messenger =
     gutterAnchorRange[1][1] = 0
     return gutterAnchorRange
 
-  render: ->
-    activeEditor = atom.workspace.getActiveTextEditor()
-    for msg in @messages
 
+  clear: ->
+    @rendered.map (renderedMsg) ->
+      renderedMsg.message.destroy()
+      renderedMsg.highlight.destroy()
+      renderedMsg.gutter.destroy()
+
+
+  render: ->
+    @clear()
+    activeEditor = atom.workspace.getActiveTextEditor()
+    @rendered = @messages.map (msg) =>
+    
       mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never'})
       anchor = mark
       gutterAnchor = activeEditor.markBufferRange(@firstLineFirstColOfRange(msg.range), {invalidate: 'never'})
@@ -103,13 +123,19 @@ module.exports = Messenger =
           class: 'inline-message-selection-highlight'
         }
       )
-      highlight = activeEditor.decorateMarker(
+      gutter = activeEditor.decorateMarker(
         gutterAnchor
         {
           type: 'line-number',
           class: "inline-message-gutter severity-#{msg.severity}" 
         }
       )
+      return { 
+          message: bubble,
+          highlight: highlight, 
+          gutter: gutter
+      }
+
 
 
   renderElement: (element, lineAdjustment) ->
@@ -170,7 +196,7 @@ module.exports = Messenger =
   provideInlineMessenger: () ->
     message: @message.bind(this)
     suggest: @suggest.bind(this)
-    clear: -> console.log "clear"
+    clear: @clear.bind(this)
 
 
 
