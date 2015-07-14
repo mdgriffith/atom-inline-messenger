@@ -35,15 +35,15 @@ module.exports = Messenger =
     @cursorMovementSubscription()
     @updateStyle()
 
-    atom.config.observe 'editor.lineHeight', (newValue) =>
+    @subscriptions.add atom.config.observe 'editor.lineHeight', (newValue) =>
       @updateStyle()
       @render()
 
-    atom.config.observe 'editor.fontSize', (newValue) =>
+    @subscriptions.add atom.config.observe 'editor.fontSize', (newValue) =>
       @updateStyle()
       @render()
 
-    atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
+     @subscriptions.add atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
       @render()
 
 
@@ -153,7 +153,6 @@ module.exports = Messenger =
     bubble = document.createElement 'div'
     bubble.id = 'inline-message'
     bubble.classList.add('inline-message')
-    bubble.classList.add("style-#{msg.style}")
     positioning = atom.config.get('atom-inline-messaging.messagePositioning')
     
     if positioning == "Below"
@@ -189,7 +188,6 @@ module.exports = Messenger =
 
 
   updateStyle: () ->
-
     lineHeightEm = atom.config.get("editor.lineHeight")
     fontSizePx = atom.config.get("editor.fontSize")
     lineHeight = lineHeightEm * fontSizePx
@@ -227,18 +225,16 @@ module.exports = Messenger =
       type: 'message'
       range: [start, end]
       content: content
-      style: style
       severity: severity
     @render()
 
 
-  suggest: ({start, end, message, suggestedCode, style}) ->
+  suggest: ({start, end, message, suggestedCode}) ->
     @messages.push
       type: 'suggestion'
       range: [start, end]
       message: message
       suggestedCode: suggestedCode
-      style: style
       severity: "suggestion"
     @render()
 
