@@ -28,6 +28,15 @@ module.exports = Messenger =
     # @subscriptions.add atom.commands.add 'atom-workspace', 'test-package:toggle': => @toggle()
 
     @cursorMovementSubscription()
+    @updateStyle()
+
+    atom.config.observe 'editor.lineHeight', (newValue) =>
+      @updateStyle()
+      @render()
+
+    atom.config.observe 'editor.fontSize', (newValue) =>
+      @updateStyle()
+      @render()
 
     atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
       @render()
@@ -120,6 +129,7 @@ module.exports = Messenger =
           class: "inline-message-gutter severity-#{msg.severity}" 
         }
       )
+
       return { 
           message: bubble,
           highlight: highlight, 
@@ -137,7 +147,8 @@ module.exports = Messenger =
   renderMessage: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-message'
-    bubble.classList.add("style-" + msg.style)
+    bubble.classList.add('inline-message')
+    bubble.classList.add("style-#{msg.style}")
     positioning = atom.config.get('atom-inline-messaging.messagePositioning')
     
     if positioning == "Below"
@@ -156,6 +167,7 @@ module.exports = Messenger =
   renderSuggestion: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-suggestion'
+    bubble.classList.add('inline-message')
     positioning = atom.config.get('atom-inline-messaging.messagePositioning')
     if positioning == "Below"
       bubble.classList.add("is-below")
@@ -168,6 +180,18 @@ module.exports = Messenger =
 
     bubble.appendChild Suggestion.fromSuggestion(msg)
     bubble
+
+
+
+  updateStyle: () ->
+
+    lineHeightEm = atom.config.get("editor.lineHeight")
+    fontSizePx = atom.config.get("editor.fontSize")
+    lineHeight = lineHeightEm * fontSizePx
+
+    styleList = ("atom-overlay .inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..80])
+    stylesheet = styleList.join("\n")
+    ss = atom.styles.addStyleSheet(stylesheet)
 
 
   # Return a range that is only the first line and first column
@@ -191,7 +215,7 @@ module.exports = Messenger =
         longestLineRowOffset = offset
       offset = offset + 1
     longestLineRowOffset
-    
+
 
   message: ({start, end, content, style, severity}) ->
     @messages.push
