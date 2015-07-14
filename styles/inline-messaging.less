@@ -3,11 +3,6 @@
 @import "syntax-variables";
 
 
-
-.line-adjust(@i){
-   top:((@component-line-height)*@i);
-}
-
 .message-style {
   // background-color: #9da5b4;
   background-color: @syntax-text-color;
@@ -51,47 +46,9 @@
   &.is-selected {
     opacity: 1;
   }
-
-
   &.is-right {
     position: relative;
     margin-left: 25px;
-    // &.up-0 {
-    //   .line-adjust(0);
-    // }
-    // &.up-1 {
-    //   .line-adjust(-1);
-    // }
-    // &.up-2 {
-    //   .line-adjust(-2);
-    // }
-    // &.up-3 {
-    //   .line-adjust(-3);
-    // }
-    // &.up-4 {
-    //   .line-adjust(-4);
-    // }
-    // &.up-5 {
-    //   .line-adjust(-5);
-    // }
-    // &.up-6 {
-    //   .line-adjust(-6);
-    // }
-    // &.up-7 {
-    //   .line-adjust(-7);
-    // }
-    // &.up-8 {
-    //   .line-adjust(-8);
-    // }
-    // &.up-9 {
-    //   .line-adjust(-9);
-    // }
-    // &.up-10 {
-    //   .line-adjust(-10);
-    // }
-    // &.up-11 {
-    //   .line-adjust(-11);
-    // }
   }
 }
 
@@ -111,13 +68,55 @@
   }
 }
 
+
+
+@unselectedFade: 10%;
+@selectedFade: 50%;
+
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
     background-color: @background-color-highlight;
   }
   &.is-selected {
+    &.severity-info {
+      .region {
+        background-color: fade(@background-color-info, @selectedFade);
+      }
+    }
+    &.severity-warning {
+      .region {
+        background-color: fade(@background-color-warning, @selectedFade);
+      }
+    }
+    &.severity-error {
+      .region {
+        background-color: fade(@background-color-error, @selectedFade);
+      }
+    }
+    &.severity-suggestion {
+      .region {
+        background-color: fade(@background-color-success, @selectedFade);
+      }
+    }
+  }
+  &.severity-info {
     .region {
-      background-color: @background-color-highlight;
+      background-color: fade(@background-color-info, @unselectedFade);
+    }
+  }
+  &.severity-warning {
+    .region {
+      background-color: fade(@background-color-warning, @unselectedFade);
+    }
+  }
+  &.severity-error {
+    .region {
+      background-color: fade(@background-color-error, @unselectedFade);
+    }
+  }
+  &.severity-suggestion {
+    .region {
+      background-color: fade(@background-color-success, @unselectedFade);
     }
   }
 }

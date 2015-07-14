@@ -119,7 +119,7 @@ module.exports = Messenger =
         mark
         {
           type: 'highlight',
-          class: "inline-message-selection-highlight#{selectedClass}"
+          class: "inline-message-selection-highlight#{selectedClass} severity-#{msg.severity}"
         }
       )
       gutter = activeEditor.decorateMarker(
