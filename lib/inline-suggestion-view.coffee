@@ -3,12 +3,24 @@ class SuggestionView extends HTMLElement
   initialize: (msg) ->
     @classList.add('inline-suggestion')
 
+    rem = true
 
     badge = document.createElement('span')
-    badge.textContent = msg.severity
+
+    if rem
+      shortcutReminder = "<span class='keyboard-shortcut-reminder'><span class='kbd'>cmd-shift-enter</span> to accept</span>"
+      badge.innerHTML = "#{msg.severity} #{shortcutReminder}"
+    else
+      badge.textContent = msg.severity
     badge.classList.add("badge")
     badge.classList.add("severity-#{msg.severity}")
     @appendChild(badge)
+
+    # reminder = document.createElement('span')
+    # reminder.classList.add('keyboard-shortcut-reminder')
+    # reminder.innerHTML = "<span class='kbd'>cmd-shift-enter</span> to accept"
+    # @appendChild(reminder)
+
 
     # Create message element
     message = document.createElement('div')
@@ -16,11 +28,13 @@ class SuggestionView extends HTMLElement
     message.classList.add('message')
     @appendChild(message)
 
+
     suggestion = document.createElement('div')
     suggestion.classList.add('suggested')
     suggestion.textContent = msg.suggestedCode
-    
     @appendChild(suggestion)
+
+  
 
     this
 

@@ -12,6 +12,11 @@ module.exports = Messenger =
         description: "Position messages below or to the right of the highlighted text"
         enum: ["Below", "Right"]
 
+    showKeyboardShortcuts:
+        type: "boolean"
+        default: true
+        description: "Show keyboard shortcut reminder at the bottom of a suggestion/message."
+
   testPackageView: null
   modalPanel: null
   subscriptions: null

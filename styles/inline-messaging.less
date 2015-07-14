@@ -3,25 +3,29 @@
 @import "syntax-variables";
 
 
+@inlineBorderRadius: 2px;
+
 .message-style {
   // background-color: #9da5b4;
   background-color: @syntax-text-color;
   color: fadein(@syntax-background-color, 100%);
-  padding: 4px 6px;
-  border-radius: 3px;
+  padding: 6px 6px;
+  border-radius: @inlineBorderRadius;
   white-space: pre;
   opacity: 0;
   .badge {
+    &:first-letter {
+      text-transform: capitalize;
+    }
+    // overflow: hidden;
     padding: 4px 6px;
-    border-radius: 3px;
+    border-radius: @inlineBorderRadius;
     margin-right: 10px;
-    margin-bottom: 3px;
-    text-transform: capitalize;
+    
     color: fadein(@syntax-background-color, 100%);
     text-shadow: none;
     border-width: 1px;
     border-style: solid;
-
 
     &.severity-info {
       background-color: @background-color-info;
@@ -63,8 +67,52 @@
 #inline-suggestion {
   .message-style();
   .suggested {
+    position:relative;
+    
+    margin-left: -6px;
+    margin-right: -7px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-bottom: -10px;
+    // margin-top: 10px;
+    // margin-bottom: 10px;
     font-family: Courier;
     white-space: pre;
+    // border: 1px solid #AAA;
+    // border-bottom:1px solid #AAA;
+    border-left-width: 0;
+    background-color: #CCC;
+
+    background-color: fade(@syntax-background-color, 20%);
+    // background-color: @syntax-result-marker-color;
+    color: @syntax-background-color;
+
+    border-bottom-right-radius: @inlineBorderRadius;
+    border-bottom-left-radius: @inlineBorderRadius;
+
+
+
+  }
+  .message {
+    display: block;
+    margin-top: 10px;
+  }
+  .keyboard-shortcut-reminder {
+    background-color:#CCC;
+    border-top-right-radius: @inlineBorderRadius;
+    border-bottom-right-radius: @inlineBorderRadius;
+    padding: 3px 5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: -8px;
+    border: 1px solid #AAA;
+    border-left-width: 0;
+
+    .kbd {
+      font-style: italic;
+    }
   }
 }
 
@@ -72,7 +120,6 @@
 
 @unselectedFade: 10%;
 @selectedFade: 50%;
-
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
     background-color: @background-color-highlight;
