@@ -4,20 +4,23 @@
 
 
 .line-adjust(@i){
-   top:(@component-line-height - 4px)*@i;
+   top:(@component-line-height)*@i;
 }
 
 .message-style {
-  background-color: #DDD;
-  color: #222;
-  padding: 2px 5px;
+  // background-color: #9da5b4;
+  background-color: fadein(@text-color, 100%);
+  color: fadein(@base-background-color, 100%);
+  padding: 4px 6px;
   border-radius: 3px;
   white-space: pre;
   opacity: 0;
   .badge {
-    padding: 2px 5px;
+    padding: 4px 6px;
     border-radius: 3px;
     margin-right: 10px;
+    text-transform: capitalize;
+    color: white;
     &.severity-info {
       background-color: @background-color-info;
     }
@@ -55,10 +58,28 @@
       .line-adjust(-4);
     }
     &.up-4 {
-      .line-adjust(-4);
+      .line-adjust(-5);
     }
     &.up-5 {
-      .line-adjust(-5);
+      .line-adjust(-6);
+    }
+    &.up-6 {
+      .line-adjust(-7);
+    }
+    &.up-7 {
+      .line-adjust(-8);
+    }
+    &.up-8 {
+      .line-adjust(-9);
+    }
+    &.up-9 {
+      .line-adjust(-10);
+    }
+    &.up-10 {
+      .line-adjust(-11);
+    }
+    &.up-11 {
+      .line-adjust(-12);
     }
   }
 }
@@ -81,11 +102,11 @@
 
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
-    background-color: #555;
+    background-color: @background-color-highlight;
   }
   &.is-selected {
     .region {
-      background-color: #666;
+      background-color: @background-color-selected;
     }
   }
 }

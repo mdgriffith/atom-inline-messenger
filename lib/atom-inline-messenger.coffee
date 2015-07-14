@@ -30,9 +30,7 @@ module.exports = Messenger =
     @cursorMovementSubscription()
 
     atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
-      # `observe` calls immediately and every time the value is changed 
       @render()
-      # console.log 'My configuration changed:', newValue
 
 
   deactivate: ->
@@ -55,28 +53,6 @@ module.exports = Messenger =
       if found.length != 0
         @render()
 
-
-  longestLineInMarker: (activeEditor, marker) ->
-    screenRange = marker.getScreenRange()
-    longestLineRowOffset = 0
-    longestLineLength = 0
-    offset = 0
-    for row in [screenRange.start.row..screenRange.end.row]
-      currentRowLength = activeEditor.lineTextForScreenRow(row).length
-      if longestLineLength < currentRowLength
-        longestLineLength = currentRowLength
-        longestLineRowOffset = offset
-      offset = offset + 1
-    longestLineRowOffset
-
-  firstLineFirstColOfRange: (range) ->
-    gutterAnchorRange = [range[0].slice(), range[1].slice()]
-    gutterAnchorRange[0][1] = 0
-    gutterAnchorRange[1][0] = gutterAnchorRange[0][0]
-    gutterAnchorRange[1][1] = 0
-    return gutterAnchorRange
-
-
   clear: ->
     @rendered.map (renderedMsg) ->
       renderedMsg.message.destroy()
@@ -94,15 +70,10 @@ module.exports = Messenger =
     
       mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never', inlineMsg: true})
 
-
       selected = mark.getBufferRange().containsPoint(cursorBufferPosition)
-
-      # selected = false
-
       selectedClass = ""
       if selected 
-        selectedClass = "is-selected"
-
+        selectedClass = " is-selected"
 
       anchor = mark
       gutterAnchor = activeEditor.markBufferRange(@firstLineFirstColOfRange(msg.range), {invalidate: 'never'})
@@ -127,8 +98,6 @@ module.exports = Messenger =
         anchorRange[1] = anchorRange[0].slice()
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
 
-
-
       bubble = activeEditor.decorateMarker(
         anchor
         {
@@ -141,7 +110,7 @@ module.exports = Messenger =
         mark
         {
           type: 'highlight',
-          class: "inline-message-selection-highlight"
+          class: "inline-message-selection-highlight#{selectedClass}"
         }
       )
       gutter = activeEditor.decorateMarker(
@@ -158,12 +127,12 @@ module.exports = Messenger =
       }
 
 
-
   renderElement: (element, selected, lineAdjustment) ->
     if element.type == 'message'
       return @renderMessage(element, selected, lineAdjustment)
     else if element.type == 'suggestion'
       return @renderSuggestion(element, selected, lineAdjustment)
+
 
   renderMessage: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
@@ -183,6 +152,7 @@ module.exports = Messenger =
     bubble.appendChild Message.fromMsg(msg)
     bubble
 
+
   renderSuggestion: (msg, selected, lineAdjustment) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-suggestion'
@@ -199,6 +169,30 @@ module.exports = Messenger =
     bubble.appendChild Suggestion.fromSuggestion(msg)
     bubble
 
+
+  # Return a range that is only the first line and first column
+  # of the range given
+  firstLineFirstColOfRange: (range) ->
+    gutterAnchorRange = [range[0].slice(), range[1].slice()]
+    gutterAnchorRange[0][1] = 0
+    gutterAnchorRange[1][0] = gutterAnchorRange[0][0]
+    gutterAnchorRange[1][1] = 0
+    return gutterAnchorRange
+
+  longestLineInMarker: (activeEditor, marker) ->
+    screenRange = marker.getScreenRange()
+    longestLineRowOffset = 0
+    longestLineLength = 0
+    offset = 0
+    for row in [screenRange.start.row..screenRange.end.row]
+      currentRowLength = activeEditor.lineTextForScreenRow(row).length
+      if longestLineLength < currentRowLength
+        longestLineLength = currentRowLength
+        longestLineRowOffset = offset
+      offset = offset + 1
+    longestLineRowOffset
+    
+
   message: ({start, end, content, style, severity}) ->
     @messages.push
       type: 'message'
@@ -207,6 +201,7 @@ module.exports = Messenger =
       style: style
       severity: severity
     @render()
+
 
   suggest: ({start, end, message, suggestedCode, style}) ->
     @messages.push
@@ -224,6 +219,10 @@ module.exports = Messenger =
     message: @message.bind(this)
     suggest: @suggest.bind(this)
     clear: @clear.bind(this)
+
+
+
+
 
 
 
