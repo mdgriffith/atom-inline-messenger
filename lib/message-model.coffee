@@ -4,19 +4,17 @@ Suggestion = require './inline-suggestion-view'
 
 class Message
   constructor: ({editor, type, range, text, severity, badge, positioning, suggestion}) ->
-    console.log range
     @editor = editor 
     @type = type
     @range = range
     @smallSnippet = range[0][0] == range[1][0]
-    console.log @smallSnippet
     @text = text
     @suggestion = suggestion
     @severity = severity
     @badge = badge
     @destroyed = false
     @selected = false
-    @positioning = positioning
+    @positioning =  @setPositioning(positioning)
     @offsetFromTop = 0
     @highlight = null
     @messageBubble = null
@@ -30,7 +28,7 @@ class Message
     mark = @editor.markBufferRange(@range, {invalidate: 'never', inlineMsg: true})
     anchor = mark
 
-    if @positioning == 'below' or @smallSnippet is true
+    if @positioning == 'below'
       anchorRange = [@range[0].slice(), @range[1].slice()]
 
       # and column to 0
@@ -144,6 +142,12 @@ class Message
         type:'line',
         class:@formatLineClass()})
 
+  setPositioning: (pos) ->
+    if @smallSnippet is true
+      @positioning = 'below'
+    else if @positioning != pos
+      @positioning = pos
+
   update: (newData) ->
     requiresRefresh = false
     if 'selected' of newData
@@ -153,7 +157,7 @@ class Message
 
     if 'positioning' of newData
       if @positioning != newData.positioning
-        @positioning = newData.positioning
+        @setPositioning(newData.positioning)
         requiresRefresh = true
 
     if requiresRefresh is true
