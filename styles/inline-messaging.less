@@ -3,9 +3,64 @@
 @import "syntax-variables";
 
 
-@inline-border-radius: 2px;
+@inline-border-radius: 0px;
 @inline-text-color: fadein(@syntax-background-color, 100%);
 @inline-bg-color: @syntax-text-color;
+
+
+
+@halfway-bg: average(@syntax-background-color, #CCCCCC);
+
+
+@inline-text-color: @syntax-background-color;
+@inline-bg-color: @syntax-text-color;
+
+
+@inline-badge-text-color: @syntax-background-color;
+
+
+.arrow_left {
+  position: relative;
+  &:after {
+    right: 100%;
+    top: 0%;
+    border-style: solid;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:after {
+    border-width: 0 10px 10px 0;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+
+  }
+}
+
+
+.arrow_up {
+  position: relative;
+  &:after {
+    left: 0px;
+    top: -7px;
+    border-style: solid;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:after {
+    border-width: 10px 0 0 10px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+
+  }
+}
 
 
 
@@ -13,43 +68,57 @@
   background-color: @inline-bg-color;
   color: @inline-text-color;
   
-
-
-  padding: 6px 6px;
+  padding: 2px 8px;
   border-radius: @inline-border-radius;
   white-space: pre;
   display: none;
   box-shadow: none;
+  &:after {
+    border-color: @inline-bg-color;
+  }
+  &.severity-info {
+    background-color: @background-color-info;
+    &:after {
+      border-color: @background-color-info;
+    }
+    border-color: darken(@background-color-info, 10%);
+  }
+  &.severity-warning {
+    background-color: @background-color-warning;
+    &:after {
+      border-color: @background-color-warning;
+    }
+    border-color: darken(@background-color-warning, 10%);
+  }
+  &.severity-error {
+    background-color: @background-color-error;
+    &:after {
+      border-color: @background-color-error;
+    }
+    border-color:  darken(@background-color-error, 10%);
+  }
+  &.severity-suggestion {
+    background-color: @background-color-success;
+    &:after {
+      border-color: @background-color-success;
+    }
+    border-color:  darken(@background-color-success, 10%);
+  }
+
   .badge {
     &:first-letter {
       text-transform: capitalize;
     }
-    // overflow: hidden;
-    padding: 4px 6px;
-    border-radius: @inline-border-radius;
+    display:block;
+    // padding: 4px 6px;
+    // border-radius: @inline-border-radius;
     margin-right: 10px;
-    
-    color: @inline-text-color;
+    padding: 0;
+    color: @inline-badge-text-color;
     text-shadow: none;
-    border-width: 1px;
-    border-style: solid;
-
-    &.severity-info {
-      background-color: @background-color-info;
-      border-color: darken(@background-color-info, 10%);
-    }
-    &.severity-warning {
-      background-color: @background-color-warning;
-      border-color: darken(@background-color-warning, 10%);
-    }
-    &.severity-error {
-      background-color: @background-color-error;
-      border-color:  darken(@background-color-error, 10%);
-    }
-    &.severity-suggestion {
-      background-color: @background-color-success;
-      border-color:  darken(@background-color-success, 10%);
-    }
+    font-weight: bold;
+    // border-width: 1px;
+    // border-style: solid;
   }
   .message {
     display: inline-block;
@@ -59,19 +128,24 @@
   }
   &.is-right {
     position: relative;
-    margin-left: 25px;
+    margin-left: 35px;
+    .arrow_left();
   }
   &.is-below {
     position: relative;
-    margin-top: 5px;
+    margin-top: 8px;
+    margin-left: 3px; 
+    .arrow_up();
   }
 }
 
-#inline-message {
+
+
+.inline-message {
   .message-style();
 }
 
-#inline-suggestion {
+.inline-suggestion {
   .message-style();
   .suggested {
     position:relative;
@@ -80,21 +154,19 @@
     margin-right: -7px;
     padding-left: 6px;
     padding-right: 6px;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    margin-bottom: -6px;
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+
     font-family: Courier;
     white-space: pre;
     border-left-width: 0;
-    background-color: #CCC;
 
-    background-color: fade(@inline-bg-color, 20%);
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    background-color: fade(@inline-bg-color, 40%);
     color: @inline-text-color;
-
-    // background-color: fade(@syntax-background-color, 20%);
-    // color: @syntax-background-color;
-
-
 
     border-bottom-right-radius: @inline-border-radius;
     border-bottom-left-radius: @inline-border-radius;
@@ -102,22 +174,11 @@
   }
   .message {
     display: block;
-    margin-top: 10px;
   }
   .keyboard-shortcut-reminder {
-    background-color:#CCC;
-    border-top-right-radius: @inline-border-radius;
-    border-bottom-right-radius: @inline-border-radius;
-    padding: 3px 5px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: -8px;
-    border: 1px solid #AAA;
-    border-left-width: 0;
-
-    .kbd {
-      font-style: italic;
-    }
+    font-style: italic;
+    font-weight: normal;
+    font-size: 0.8em;
   }
 }
 
@@ -181,10 +242,6 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
         border-left: none;
       }
     }
-
-
-
-
 
   }
 

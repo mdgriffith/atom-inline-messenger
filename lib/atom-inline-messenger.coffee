@@ -207,7 +207,17 @@ module.exports = Messenger =
       return @renderSuggestion(element)
 
 
+
   renderMessage: (msg) ->
+    Message.fromMsg(msg)
+
+  renderSuggestion: (msg) ->
+    Suggestion.fromSuggestion(msg)
+
+
+
+
+  renderMessageDEP: (msg) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-message'
     bubble.classList.add('inline-message')
@@ -226,7 +236,7 @@ module.exports = Messenger =
     bubble
 
 
-  renderSuggestion: (msg) ->
+  renderSuggestionDEP: (msg) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-suggestion'
     bubble.classList.add('inline-message')
@@ -277,12 +287,16 @@ module.exports = Messenger =
     longestLineRowOffset
 
 
-  message: ({start, end, content, style, severity}) ->
+  message: ({start, end, content, style, severity, showBadge}) ->
+    if showBadge is undefined or showBadge is null
+      showBadge = true
+
     @messages.push
       type: 'message'
       range: [start, end]
       content: content
       severity: severity
+      showBadge: showBadge
     @render()
 
 
@@ -293,6 +307,7 @@ module.exports = Messenger =
       message: message
       suggestedCode: suggestedCode
       severity: "suggestion"
+      showBadge: true
     @render()
 
   # Accepts the current suggestion
