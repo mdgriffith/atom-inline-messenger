@@ -3,14 +3,20 @@
 @import "syntax-variables";
 
 
-@inlineBorderRadius: 2px;
+@inline-border-radius: 2px;
+@inline-text-color: fadein(@syntax-background-color, 100%);
+@inline-bg-color: @syntax-text-color;
+
+
 
 .message-style {
-  // background-color: #9da5b4;
-  background-color: @syntax-text-color;
-  color: fadein(@syntax-background-color, 100%);
+  background-color: @inline-bg-color;
+  color: @inline-text-color;
+  
+
+
   padding: 6px 6px;
-  border-radius: @inlineBorderRadius;
+  border-radius: @inline-border-radius;
   white-space: pre;
   display: none;
   box-shadow: none;
@@ -20,10 +26,10 @@
     }
     // overflow: hidden;
     padding: 4px 6px;
-    border-radius: @inlineBorderRadius;
+    border-radius: @inline-border-radius;
     margin-right: 10px;
     
-    color: fadein(@syntax-background-color, 100%);
+    color: @inline-text-color;
     text-shadow: none;
     border-width: 1px;
     border-style: solid;
@@ -82,11 +88,16 @@
     border-left-width: 0;
     background-color: #CCC;
 
-    background-color: fade(@syntax-background-color, 20%);
-    color: @syntax-background-color;
+    background-color: fade(@inline-bg-color, 20%);
+    color: @inline-text-color;
 
-    border-bottom-right-radius: @inlineBorderRadius;
-    border-bottom-left-radius: @inlineBorderRadius;
+    // background-color: fade(@syntax-background-color, 20%);
+    // color: @syntax-background-color;
+
+
+
+    border-bottom-right-radius: @inline-border-radius;
+    border-bottom-left-radius: @inline-border-radius;
 
   }
   .message {
@@ -95,8 +106,8 @@
   }
   .keyboard-shortcut-reminder {
     background-color:#CCC;
-    border-top-right-radius: @inlineBorderRadius;
-    border-bottom-right-radius: @inlineBorderRadius;
+    border-top-right-radius: @inline-border-radius;
+    border-bottom-right-radius: @inline-border-radius;
     padding: 3px 5px;
     margin-top: 0px;
     margin-bottom: 0px;
