@@ -9,7 +9,7 @@ module.exports = Messenger =
     messagePositioning:
         type: "string"
         default: "Right"
-        description: "Position messages below or to the right of the highlighted text"
+        description: "Position multiline messages below or to the right of the highlighted text"
         enum: ["Below", "Right"]
 
     showKeyboardShortcuts:
@@ -17,11 +17,10 @@ module.exports = Messenger =
         default: true
         description: "Show keyboard shortcut reminder at the bottom of a suggestion/message."
 
-  testPackageView: null
-  modalPanel: null
+
   subscriptions: null
   messages:[]
-  rendered:[]
+  currentSuggestion: null
 
 
   activate: (state) ->
@@ -31,6 +30,9 @@ module.exports = Messenger =
 
     # Register command that toggles this view
     # @subscriptions.add atom.commands.add 'atom-workspace', 'test-package:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'atom-inline-messenger:accept-suggestion': (event) =>
+        @acceptSuggestion()
 
     @cursorMovementSubscription()
     @updateStyle()
@@ -68,123 +70,178 @@ module.exports = Messenger =
         @render()
 
   clear: ->
-    @rendered.map (renderedMsg) ->
-      renderedMsg.message.destroy()
-      renderedMsg.highlight.destroy()
-      renderedMsg.gutter.destroy()
+    @messages.map (msg) ->
+      if 'rendered' of msg
+        msg.rendered.message.destroy()
+        msg.rendered.highlight.destroy()
+        # msg.rendered.highlightLeft.destroy()
+        # msg.rendered.gutterIcon.destroy()
+        # msg.rendered.gutter.destroy()
 
 
   render: ->
     @clear()
     activeEditor = atom.workspace.getActiveTextEditor()
     cursorBufferPosition = activeEditor.getCursorBufferPosition()
+    @currentSuggestion = null
 
-
-    @rendered = @messages.map (msg) =>
+    @messages = @messages.map (msg) =>
     
+      smallSnippet = false
+      if msg.range[0][0] == msg.range[1][0]
+        smallSnippet = true
+
       mark = activeEditor.markBufferRange(msg.range, {invalidate: 'never', inlineMsg: true})
 
       selected = mark.getBufferRange().containsPoint(cursorBufferPosition)
       selectedClass = ""
       if selected 
-        selectedClass = " is-selected"
+        selectedClass = "-is-selected"
+        msg.selected = true
+      else
+        msg.selected = false
+
+      if selected and msg.type == 'suggestion'
+        @currentSuggestion = msg
 
       anchor = mark
       gutterAnchor = activeEditor.markBufferRange(@firstLineFirstColOfRange(msg.range), {invalidate: 'never'})
-      longestLine = @longestLineInMarker(activeEditor, mark)
+      longestLineOffset = @longestLineInMarker(activeEditor, mark)
 
       positioning = atom.config.get('atom-inline-messaging.messagePositioning')
-      if positioning == "Below"
+
+      if positioning == 'Below' or smallSnippet is true
         anchorRange = [msg.range[0].slice(), msg.range[1].slice()]
 
-        # set line to last line in selection
-        anchorRange[0][0] = anchorRange[1][0]
         # and column to 0
-        anchorRange[0][1] = 0
-        #Set the second part of the selecto to the same place
+        if smallSnippet is true
+          anchorRange[0][1] = anchorRange[0][1] + 1
+        else
+           # set line to last line in selection
+          anchorRange[0][0] = anchorRange[1][0]
+          anchorRange[0][1] = 1
+
+        #Set the end of the selection to the same place
         anchorRange[1] = anchorRange[0].slice()
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
+        msg.positioning = "below"
 
       else if positioning == "Right"
         anchorRange = [msg.range[0].slice(), msg.range[1].slice()]
-        anchorRange[0][0] = anchorRange[0][0]+longestLine
-        anchorRange[0][1] = 80
+        anchorRange[0][0] = anchorRange[0][0] + longestLineOffset
+        anchorRange[0][1] = 250
         anchorRange[1] = anchorRange[0].slice()
         anchor = activeEditor.markBufferRange(anchorRange, {invalidate: 'never'})
+        msg.positioning = "right"
+        msg.lineOffsetFromTop = longestLineOffset
+
+      smallSnippetClass = ""
+      if smallSnippet is true
+        smallSnippetClass = " is-small-snippet"
+
 
       bubble = activeEditor.decorateMarker(
         anchor
         {
           type: 'overlay',
           class: 'inline-message'
-          item: @renderElement(msg, selected, longestLine)
-        }
-      )
-      highlight = activeEditor.decorateMarker(
-        mark
-        {
-          type: 'highlight',
-          class: "inline-message-selection-highlight#{selectedClass} severity-#{msg.severity}"
-        }
-      )
-      gutter = activeEditor.decorateMarker(
-        gutterAnchor
-        {
-          type: 'line-number',
-          class: "inline-message-gutter severity-#{msg.severity}" 
+          item: @renderElement(msg)
         }
       )
 
-      return { 
-          message: bubble,
-          highlight: highlight, 
-          gutter: gutter
-      }
+     
+      if smallSnippet is true
+        if selected 
+          selectedClass = " is-selected"
+        highlight = activeEditor.decorateMarker(
+          mark
+          {
+            type: 'highlight',
+            class: "inline-message-selection-highlight#{selectedClass} severity-#{msg.severity}#{smallSnippetClass}"
+          }
+        )
+      else
+        # The class name mangling is because atom wont accept multiple classes for a line decoration
+        # Not that big of a deal, I suppose
+        highlight = activeEditor.decorateMarker(
+          mark
+          {
+            type: 'line',
+            class: "inline-message-multiline-highlight-severity-#{msg.severity}#{selectedClass}"
+          }
+        )
 
 
-  renderElement: (element, selected, lineAdjustment) ->
+       
+      # gutter = activeEditor.decorateMarker(
+      #   mark
+      #   {
+      #     type: 'line-number',
+      #     class: "inline-message-gutter-multiline severity-#{msg.severity}" 
+      #   }
+      # )
+      # gutterIcon = activeEditor.decorateMarker(
+      #   gutterAnchor
+      #   {
+      #     type: 'line-number',
+      #     class: "inline-message-gutter severity-#{msg.severity}" 
+      #   }
+      # )
+
+
+      msg['rendered'] =
+                  message: bubble,
+                  # highlight: highlight, 
+                  highlight: highlight,
+                  # gutter: gutter,
+                  # gutterIcon: gutterIcon
+
+      msg
+      
+
+
+  renderElement: (element) ->
     if element.type == 'message'
-      return @renderMessage(element, selected, lineAdjustment)
+      return @renderMessage(element)
     else if element.type == 'suggestion'
-      return @renderSuggestion(element, selected, lineAdjustment)
+      return @renderSuggestion(element)
 
 
-  renderMessage: (msg, selected, lineAdjustment) ->
+  renderMessage: (msg) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-message'
     bubble.classList.add('inline-message')
-    positioning = atom.config.get('atom-inline-messaging.messagePositioning')
+    # positioning = atom.config.get('atom-inline-messaging.messagePositioning')
     
-    if positioning == "Below"
+    if msg.positioning == "below"
       bubble.classList.add("is-below")
-    else if positioning == "Right"
+    else if msg.positioning == "right"
       bubble.classList.add("is-right")
-      bubble.classList.add("up-#{lineAdjustment}")
+      bubble.classList.add("up-#{msg.lineOffsetFromTop}")
 
-    if selected == true
+    if msg.selected is true
       bubble.classList.add("is-selected")
 
     bubble.appendChild Message.fromMsg(msg)
     bubble
 
 
-  renderSuggestion: (msg, selected, lineAdjustment) ->
+  renderSuggestion: (msg) ->
     bubble = document.createElement 'div'
     bubble.id = 'inline-suggestion'
     bubble.classList.add('inline-message')
-    positioning = atom.config.get('atom-inline-messaging.messagePositioning')
-    if positioning == "Below"
+    # positioning = atom.config.get('atom-inline-messaging.messagePositioning')
+    if msg.positioning == "below"
       bubble.classList.add("is-below")
-    else if positioning == "Right"
+    else if msg.positioning == "right"
       bubble.classList.add("is-right")
-      bubble.classList.add("up-#{lineAdjustment}")
+      bubble.classList.add("up-#{msg.lineOffsetFromTop}")
 
-    if selected == true
+    if msg.selected is true
       bubble.classList.add("is-selected")
 
     bubble.appendChild Suggestion.fromSuggestion(msg)
     bubble
-
 
 
   updateStyle: () ->
@@ -238,7 +295,19 @@ module.exports = Messenger =
       severity: "suggestion"
     @render()
 
-    # TextBuffer.setTextInRange(range, text)
+  # Accepts the current suggestion
+  acceptSuggestion: () ->
+    if @currentSuggestion is null
+      return
+
+    newText = @currentSuggestion.suggestedCode
+    range = @currentSuggestion.range
+
+    activeBuffer = atom.workspace.getActiveTextEditor().getBuffer()
+    activeBuffer.setTextInRange(range, newText)
+
+
+
 
   provideInlineMessenger: () ->
     message: @message.bind(this)

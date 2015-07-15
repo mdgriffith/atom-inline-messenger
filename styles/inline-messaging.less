@@ -12,7 +12,8 @@
   padding: 6px 6px;
   border-radius: @inlineBorderRadius;
   white-space: pre;
-  opacity: 0;
+  display: none;
+  box-shadow: none;
   .badge {
     &:first-letter {
       text-transform: capitalize;
@@ -48,20 +49,20 @@
     display: inline-block;
   }
   &.is-selected {
-    opacity: 1;
+    display:block;
   }
   &.is-right {
     position: relative;
     margin-left: 25px;
   }
+  &.is-below {
+    position: relative;
+    margin-top: 5px;
+  }
 }
 
 #inline-message {
   .message-style();
-  &.style-code {
-    font-family: Courier;
-    color: blue;
-  }
 }
 
 #inline-suggestion {
@@ -75,24 +76,17 @@
     padding-right: 6px;
     padding-top: 7px;
     padding-bottom: 7px;
-    margin-bottom: -10px;
-    // margin-top: 10px;
-    // margin-bottom: 10px;
+    margin-bottom: -6px;
     font-family: Courier;
     white-space: pre;
-    // border: 1px solid #AAA;
-    // border-bottom:1px solid #AAA;
     border-left-width: 0;
     background-color: #CCC;
 
     background-color: fade(@syntax-background-color, 20%);
-    // background-color: @syntax-result-marker-color;
     color: @syntax-background-color;
 
     border-bottom-right-radius: @inlineBorderRadius;
     border-bottom-left-radius: @inlineBorderRadius;
-
-
 
   }
   .message {
@@ -122,50 +116,114 @@
 @selectedFade: 50%;
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
-    background-color: @background-color-highlight;
   }
+  &.is-small-snippet {
+    .region {
+    }
+    &.is-selected {
+      &.severity-info {
+        .region {
+          background-color: fade(@background-color-info, @selectedFade);
+          border-bottom: 1px dashed @background-color-info;
+        }
+      }
+      &.severity-warning {
+        .region {
+          background-color: fade(@background-color-warning, @selectedFade);
+          border-bottom: 1px dashed @background-color-warning;
+        }
+      }
+      &.severity-error {
+        .region {
+          background-color: fade(@background-color-error, @selectedFade);
+          border-bottom: 1px dashed @background-color-error;
+        }
+      }
+      &.severity-suggestion {
+        .region {
+          background-color: fade(@background-color-success, @selectedFade);
+          border-bottom: 1px dashed @background-color-success;
+        }
+      }
+    }
+    &.severity-info {
+      .region {
+        border-bottom: 1px dashed @background-color-info;
+        border-left: none;
+      }
+    }
+    &.severity-warning {
+      .region {
+        border-bottom: 1px dashed @background-color-warning;
+        border-left: none;
+      }
+    }
+    &.severity-error {
+      .region {
+        border-bottom: 1px dashed @background-color-error;
+        border-left: none;
+      }
+    }
+    &.severity-suggestion {
+      .region {
+        border-bottom: 1px dashed @background-color-success;
+        border-left: none;
+      }
+    }
+
+
+
+
+
+  }
+
   &.is-selected {
     &.severity-info {
       .region {
         background-color: fade(@background-color-info, @selectedFade);
+        border-bottom: none;
       }
     }
     &.severity-warning {
       .region {
         background-color: fade(@background-color-warning, @selectedFade);
+        border-bottom: none;
       }
     }
     &.severity-error {
       .region {
         background-color: fade(@background-color-error, @selectedFade);
+        border-bottom: none;
       }
     }
     &.severity-suggestion {
       .region {
         background-color: fade(@background-color-success, @selectedFade);
+        border-bottom: none;
       }
     }
   }
-  &.severity-info {
-    .region {
-      background-color: fade(@background-color-info, @unselectedFade);
-    }
-  }
-  &.severity-warning {
-    .region {
-      background-color: fade(@background-color-warning, @unselectedFade);
-    }
-  }
-  &.severity-error {
-    .region {
-      background-color: fade(@background-color-error, @unselectedFade);
-    }
-  }
-  &.severity-suggestion {
-    .region {
-      background-color: fade(@background-color-success, @unselectedFade);
-    }
-  }
+  // &.severity-info {
+  //   .region {
+  //     border-left: 1px dashed @background-color-info;
+  //     // background-color: fade(@background-color-info, @unselectedFade);
+  //   }
+  // }
+  // &.severity-warning {
+  //   .region {
+  //     border-left: 1px dashed @background-color-warning;
+  //   }
+  // }
+  // &.severity-error {
+  //   .region {
+  //     border-left: 1px dashed @background-color-error;
+  //   }
+  // }
+  // &.severity-suggestion {
+  //   .region {
+  //     border-left: 1px dashed @background-color-success;
+  //   }
+  // }
 }
 
 atom-text-editor::shadow .inline-message-gutter .icon-right {
@@ -188,6 +246,73 @@ atom-text-editor::shadow .inline-message-gutter .icon-right {
   }
   
 }
+
+// atom-text-editor::shadow .inline-message-gutter-multiline  {
+//   &.severity-info .icon-right {     
+//     visibility: visible;
+//     border-right:2px dotted @background-color-info;
+//   }
+//   &.severity-warning .icon-right {
+//     visibility: visible;
+//     border-right:2px dotted @background-color-warning;
+//   }
+//   &.severity-error .icon-right {
+//     visibility: visible;
+//     border-right:2px dotted @background-color-error;
+//   }
+//   &.severity-suggestion .icon-right {
+//     visibility: visible;
+//     border-right:2px dotted @background-color-success;
+//   }
+// }
+
+
+@lineFade: 15%;
+
+.line-idle(@color) {
+  padding-left: 8px;
+  margin-left: -10px;
+  border-left: 2px dashed darken(@color, 10%);
+}
+
+.line-selected(@color) {
+  background-color: fade(@color, @lineFade);
+}
+
+
+// This class name mangling is because atom doesnt accept multiple classes per a line decoration
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-info {
+  .line-idle(@background-color-info);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-info-is-selected {
+  .line-idle(@background-color-info);
+  .line-selected(@background-color-info);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-warning {
+  .line-idle(@background-color-warning);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-warning-is-selected {
+  .line-idle(@background-color-warning);
+  .line-selected(@background-color-warning);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-error {
+  .line-idle(@background-color-error);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-error-is-selected {
+  .line-idle(@background-color-error);
+  .line-selected(@background-color-error);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-suggestion {
+  .line-idle(@background-color-success);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-severity-suggestion-is-selected {
+  .line-idle(@background-color-success);
+  .line-selected(@background-color-success);
+}
+
+
+
+
 
 atom-text-editor::shadow .inline-message-gutter {
   &.severity-info {

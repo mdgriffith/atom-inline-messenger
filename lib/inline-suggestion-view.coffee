@@ -16,12 +16,6 @@ class SuggestionView extends HTMLElement
     badge.classList.add("severity-#{msg.severity}")
     @appendChild(badge)
 
-    # reminder = document.createElement('span')
-    # reminder.classList.add('keyboard-shortcut-reminder')
-    # reminder.innerHTML = "<span class='kbd'>cmd-shift-enter</span> to accept"
-    # @appendChild(reminder)
-
-
     # Create message element
     message = document.createElement('div')
     message.textContent = msg.message
