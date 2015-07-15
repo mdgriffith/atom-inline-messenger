@@ -15,7 +15,7 @@ class MessageView extends HTMLElement
       @classList.add("is-selected")
 
     message = document.createElement('div')
-    message.textContent = msg.content
+    message.textContent = msg.text
     message.classList.add('message')
 
     @appendChild(message)

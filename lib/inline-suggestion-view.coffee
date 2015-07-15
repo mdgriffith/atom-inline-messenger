@@ -16,7 +16,7 @@ class SuggestionView extends HTMLElement
 
     # Create message element
     message = document.createElement('div')
-    message.textContent = msg.message
+    message.textContent = msg.text
     message.classList.add('message')
     @appendChild(message)
 
