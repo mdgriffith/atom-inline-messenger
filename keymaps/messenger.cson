@@ -1,2 +1,2 @@
 'atom-text-editor':
-  'cmd-shift-enter': 'atom-inline-messenger:accept-suggestion'
+  'cmd-shift-a': 'atom-inline-messenger:accept-suggestion'
