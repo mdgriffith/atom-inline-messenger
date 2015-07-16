@@ -72,33 +72,38 @@ module.exports = Messenger =
 
   cursorMovementSubscription: () ->
     if @activeEditor
-      @activeEditor.onDidChangeCursorPosition (cursor) =>
-        closeMsgs = []
-        for msg in @messages
-          if msg.getRange().containsPoint(cursor["newBufferPosition"])
-            closeMsgs.push(msg)
+      @activeEditor.onDidChangeCursorPosition (cursor) => @selectUnderCursor()
+        
 
-        if closeMsgs.length == 0
-          @clearSelection()
-        else
-          closeMsgs.sort (msg1, msg2) =>
-                  range1 = msg1.getRange()
-                  range2 = msg2.getRange()
-                  delta1 = @pointDistance(cursor["newBufferPosition"], range1.start)
-                  delta2 = @pointDistance(cursor["newBufferPosition"], range2.start)
+  selectUnderCursor: (cursor) ->
+    cursorPos = @activeEditor.getCursorBufferPosition()
+    closeMsgs = []
+    for msg in @messages
+      if msg.getRange().containsPoint(cursorPos)
+        closeMsgs.push(msg)
 
-                  if delta1[0] < delta2[0]
-                    return -1
-                  else if delta1[0] > delta2[0]
-                    return 1
-                  else 
-                    if delta1[1] < delta2[1]
-                      return -1
-                    else if delta1[1] > delta2[1]
-                      return 1
-                    else
-                      return 0
-          @select(closeMsgs[0])
+    if closeMsgs.length == 0
+      @clearSelection()
+    else
+      closeMsgs.sort (msg1, msg2) =>
+              range1 = msg1.getRange()
+              range2 = msg2.getRange()
+              delta1 = @pointDistance(cursorPos, range1.start)
+              delta2 = @pointDistance(cursorPos, range2.start)
+
+              if delta1[0] < delta2[0]
+                return -1
+              else if delta1[0] > delta2[0]
+                return 1
+              else 
+                if delta1[1] < delta2[1]
+                  return -1
+                else if delta1[1] > delta2[1]
+                  return 1
+                else
+                  return 0
+      @select(closeMsgs[0])
+
 
   clear: ->
     @messages.map (msg) -> msg.destroy()
@@ -159,6 +164,7 @@ module.exports = Messenger =
             debug: debug
     @messages.push msg
     @sortMessages()
+    @selectUnderCursor()
   
 
   suggest: ({start, end, text, suggestedCode, debug, badge}) ->
@@ -174,6 +180,7 @@ module.exports = Messenger =
             debug: debug
     @messages.push msg
     @sortMessages()
+    @selectUnderCursor()
 
 
   animateReplacementBlink: (range) ->
