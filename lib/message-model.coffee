@@ -3,8 +3,9 @@ MessageView = require './inline-message-view'
 Suggestion = require './inline-suggestion-view'
 
 class Message
-  constructor: ({editor, type, range, text, severity, badge, positioning, suggestion}) ->
+  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion}) ->
     @editor = editor 
+    @debug = debug
     @type = type
     @range = range
     @smallSnippet = range[0][0] == range[1][0]
@@ -30,33 +31,11 @@ class Message
 
     @correctIndentation = @requiresIndentCorrection()
     mark = @editor.markBufferRange(@range, {invalidate: 'never', inlineMsg: true})
+    @offsetFromTop = @longestLineInMarker(mark)
     anchor = mark
-
     mark.onDidChange => @updateMarkerPosition()
-
-    if @positioning == 'below'
-      anchorRange = [@range[0].slice(), @range[1].slice()]
-
-      # and column to 0
-      if @smallSnippet is true
-        anchorRange[0][1] = anchorRange[0][1] + 1
-      else
-         # set line to last line in selection
-        anchorRange[0][0] = anchorRange[1][0]
-        anchorRange[0][1] = 1
-
-      #Set the end of the selection to the same place
-      anchorRange[1] = anchorRange[0].slice()
-      anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
-
-    else if @positioning == "right"
-      @offsetFromTop = @longestLineInMarker(mark)
-      anchorRange = [@range[0].slice(), @range[1].slice()]
-      anchorRange[0][0] = anchorRange[0][0] + @offsetFromTop
-      anchorRange[0][1] = 250
-      anchorRange[1] = anchorRange[0].slice()
-      anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
-
+    anchorRange = @calculateAnchorRange()
+    anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
 
     @messageBubble = @editor.decorateMarker(
       anchor
@@ -104,6 +83,30 @@ class Message
     if @selected
       cls = cls + "-is-selected"
     return cls
+
+
+  updateAnchor: () ->
+    anchorRange = @calculateAnchorRange()
+    @messageBubble.getMarker().setBufferRange(anchorRange)
+
+
+  calculateAnchorRange: () ->
+    anchorRange = [@range[0].slice(), @range[1].slice()]
+    if @positioning == 'below'
+      if @smallSnippet is true
+        anchorRange[0][1] = anchorRange[0][1] + 1
+      else
+         # set line to last line in selection
+        anchorRange[0][0] = anchorRange[1][0]
+        anchorRange[0][1] = 1
+      #Set the end of the selection to the same place
+      anchorRange[1] = anchorRange[0].slice()
+    else if @positioning == "right"
+      anchorRange = [@range[0].slice(), @range[1].slice()]
+      anchorRange[0][0] = anchorRange[0][0] + @offsetFromTop
+      anchorRange[0][1] = 250
+      anchorRange[1] = anchorRange[0].slice()
+    return anchorRange
 
 
   # Return an relative row offset of which line is longest in a marker.
@@ -157,8 +160,10 @@ class Message
     else if @positioning != pos
       @positioning = pos
 
+
   updateMarkerPosition: () ->
     @correctIndentation = @requiresIndentCorrection()
+    @updateAnchor()
     if @correctIndentation is true
       @messageBubble.properties.item.classList.add('indentation-correction')
     else
@@ -179,7 +184,7 @@ class Message
 
     if requiresRefresh is true
       @refresh()
-# @correctIndentation = @requiresIndentCorrection()
+
 
   getRange: () ->
     @highlight.getMarker().getBufferRange()
