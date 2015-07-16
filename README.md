@@ -28,9 +28,9 @@ it, include `inline-messenger` in the `consumedServices` section of your `packag
 }
 ```
 
-Then, in your package's main module, call methods on the service.
+Then call methods on the service in your package's main module.
 
-There is only one function, which is `message`.  This creates a message in the active editor. 
+There is only one function, which is `message` which creates a message in the active editor. 
 
 ```coffee
 module.exports =
@@ -69,7 +69,7 @@ module.exports =
 
 * `Message Positioning` - For messages that span multiple lines, show them either below the highlighted code or to the right.  Defaults to below.
 * `Show Keyboard Shortcut For Suggestions` - Show keyboard shortcut reminder at the bottom of a suggestion.  Defaults to true.
-* `acceptSuggestionAnimation` - Show a small highlight flash when suggested code is accepted.  Defaults to true.
+* `Accept Suggestion Animation` - Show a small highlight flash when suggested code is accepted.  Defaults to true.
 
 
 
