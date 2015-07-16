@@ -2,7 +2,7 @@
 
 Show messages next to the relevant code.  Also allows for a package to make code suggestions.
 
-An example of a message
+An example of an inline message message
 ![](https://f.cloud.github.com/assets/671378/2241819/f8418cb8-9ce5-11e3-87e5-109e965986d0.png)
 
 An example of a message with a code suggestion
@@ -41,28 +41,34 @@ module.exports =
     @messenger = messenger
 
     @messages.push @messenger.message
-              start: [22,0]  
-              end: [25,8] 
+              range: [[22,0], [25,8]] 
               text: "A New Message"
               severity: "warning"
 
     @messages.push @messenger.message
-              start: [35,0]  
-              end: [35,8] 
+              range: [[35,0], [35,8]]
               text: "A New Code Suggestion"
               suggestion: "myNewCodeSuggestion();"
-              severity: "warning"
 
   deactivate: ->
     @messages.map (msg) -> msg.destroy()
+    @messages = []
 ```
+
+## The Message Command
+
+The message method takes the following parameters
+    * `range` - The range to highlight in the editor
+    * `text` - The text to display in the message
+    * `severity` - Can be any of the following: info, warning, error, suggestion.  This will affect the coloring of the message.
+    * `suggestion` - Provide a code suggestion to replace the highlighted text.
 
 
 ## Commands
 
-* `next-message` -> Jumps to the next message.  The default keyboard shortcut is alt-down
-* `prev-message` -> Jumps to the previous message.  The default keyboard shortcut is alt-up
-* `accept-suggestion` -> If the currently viewed message is a code suggestion, this command will make the suggested changes for you.  The default is cmd-shift-a
+    * `next-message` -> Jumps to the next message.  The default keyboard shortcut is alt-down
+    * `prev-message` -> Jumps to the previous message.  The default keyboard shortcut is alt-up
+    * `accept-suggestion` -> If the currently viewed message is a code suggestion, this command will make the suggested changes for you.  The default is cmd-shift-a
 
 
 ## Settings

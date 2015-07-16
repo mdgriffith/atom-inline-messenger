@@ -166,36 +166,30 @@ module.exports = Messenger =
                           return startComp
 
 
-  message: ({start, end, text, severity, debug, badge}) ->
+  message: ({range, text, severity, suggestion, debug}) ->
+    if suggestion is null or suggestion is undefined
+      msgType = 'message'
+    else
+      msgType = 'suggestion'
+
+    if severity is null or severity is undefined
+      if msgType == 'suggestion'
+        severity = 'suggestion'
+      else
+        severity = 'info'
+
     msg = new Message
             editor: @activeEditor 
-            type: 'message'
-            range: [start, end]
+            type: msgType
+            range: range
+            suggestion: suggestion
             positioning: atom.config.get('atom-inline-messaging.messagePositioning').toLowerCase()
             text: text
             severity: severity
-            badge: badge
             debug: debug
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()
-  
-
-  suggest: ({start, end, text, suggestedCode, debug, badge}) ->
-    msg = new Message
-            editor: @activeEditor 
-            type: 'suggestion'
-            range: [start, end]
-            positioning: atom.config.get('atom-inline-messaging.messagePositioning').toLowerCase()
-            text: text
-            severity: 'suggestion'
-            badge: badge
-            suggestion: suggestedCode
-            debug: debug
-    @messages.push msg
-    @sortMessages()
-    @selectUnderCursor()
-
 
   animateReplacementBlink: (range) ->
     marker = @activeEditor.markBufferRange(range, {invalidate: 'never', inlineReplacementFlash: true})
@@ -281,7 +275,6 @@ module.exports = Messenger =
 
   provideInlineMessenger: () ->
     message: @message.bind(this)
-    suggest: @suggest.bind(this)
 
 
 

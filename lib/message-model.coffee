@@ -67,7 +67,7 @@ class Message
       {
         type: 'overlay',
         class: 'inline-message'
-        item: @renderElement()
+        item: MessageView.fromMsg(this)
       }
     )
 
@@ -155,13 +155,6 @@ class Message
         longestLineRowOffset = offset
       offset = offset + 1
     longestLineRowOffset
-
-
-  renderElement: () ->
-    if @type == 'message'
-      return MessageView.fromMsg(this)
-    else if @type == 'suggestion'
-      return Suggestion.fromSuggestion(this)
 
 
   refresh: () ->
