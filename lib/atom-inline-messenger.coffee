@@ -1,9 +1,7 @@
 # { View } = require 'atom'
 {CompositeDisposable} = require 'atom'
-# MessageView = require './inline-message-view'
-# Suggestion = require './inline-suggestion-view'
-
 Message = require './message-model'
+
 
 module.exports = Messenger =
 
@@ -13,17 +11,14 @@ module.exports = Messenger =
         default: "Right"
         description: "Position multiline messages below or to the right of the highlighted text"
         enum: ["Below", "Right"]
-
     showKeyboardShortcutForSuggestion:
         type: "boolean"
         default: true
         description: "Show keyboard shortcut reminder at the bottom of a suggestion."
 
-
   subscriptions: null
   messages:[]
   focus: null
-
   activeEditor: null
 
   activate: (state) ->
@@ -59,66 +54,97 @@ module.exports = Messenger =
       @updateStyle()
 
     @subscriptions.add atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
-      @refresh()
+      @messages.map (msg) -> msg.update({positioning:newValue.toLowerCase()})
 
 
   deactivate: ->
     @subscriptions.dispose()
+    @clear()
+
 
   serialize: ->
     messageViewState: @messageView.serialize()
 
 
+  pointDistance: (point1, point2) ->
+    return [Math.abs(point1.row-point2.row), Math.abs(point1.column-point2.column)]
+
+
   cursorMovementSubscription: () ->
     if @activeEditor
       @activeEditor.onDidChangeCursorPosition (cursor) =>
+        closeMsgs = []
         for msg in @messages
-          if msg.highlight.getMarker().getBufferRange().containsPoint(cursor["newBufferPosition"])
-            @refresh()
-            break
+          if msg.getRange().containsPoint(cursor["newBufferPosition"])
+            closeMsgs.push(msg)
 
+        if closeMsgs.length == 0
+          @clearSelection()
+        else
+          closeMsgs.sort (msg1, msg2) =>
+                  range1 = msg1.getRange()
+                  range2 = msg2.getRange()
+                  delta1 = @pointDistance(cursor["newBufferPosition"], range1.start)
+                  delta2 = @pointDistance(cursor["newBufferPosition"], range2.start)
+
+                  if delta1[0] < delta2[0]
+                    return -1
+                  else if delta1[0] > delta2[0]
+                    return 1
+                  else 
+                    if delta1[1] < delta2[1]
+                      return -1
+                    else if delta1[1] > delta2[1]
+                      return 1
+                    else
+                      return 0
+          @select(closeMsgs[0])
 
   clear: ->
     @messages.map (msg) -> msg.destroy()
-    
-
-  refresh: ->
-    @focus = null
-    @messages = @removeDestroyed(@messages)
-    @messages.map (msg) => @updateMessage(msg)
 
 
   removeDestroyed: (messages) ->
     return (msg for msg in messages when msg.destroyed isnt true)
 
 
+  clearSelection: () ->
+    @messages.map (msg) -> msg.update({'selected':false})
+    @focus = null
+
+
   select: (msg) ->
-    @activeEditor.setCursorBufferPosition(msg.highlight.getMarker().getBufferRange().start)
+    # This should be moved to be called on a 'destroyed' event from a mesage
+    @messages = @removeDestroyed(@messages)
+
+    @messages.map (msg) -> msg.update({'selected':false})
+    @focus = msg
     msg.update({'selected':true})
 
-  updateMessage:(msg) ->
-    update = {}
-    cursorBuffPos = @activeEditor.getCursorBufferPosition()
 
-    if msg.highlight.getMarker().getBufferRange().containsPoint(cursorBuffPos)
-      update.selected = true
-      # if msg.type == 'suggestion'
-      @focus = msg
-    else
-      update.selected = false
-    update.positioning = atom.config.get('atom-inline-messaging.messagePositioning').toLowerCase()
-    msg.update(update)
+  selectAndMoveCursor: (msg) ->
+    @activeEditor.setCursorBufferPosition(msg.getRange().start)
+    @select(msg)
 
 
   updateStyle: () ->
     lineHeightEm = atom.config.get("editor.lineHeight")
     fontSizePx = atom.config.get("editor.fontSize")
     lineHeight = lineHeightEm * fontSizePx
-
     styleList = ("atom-overlay .inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
-
     stylesheet = styleList.join("\n")
     ss = atom.styles.addStyleSheet(stylesheet)
+
+
+  sortMessages: () ->
+    @messages.sort (msg1, msg2) -> 
+                        range1 = msg1.getRange()
+                        range2 = msg2.getRange()
+                        startComp = range1.start.compare(range2.start)
+                        if startComp == 0
+                          return range1.end.compare(range2.end)
+                        else
+                          return startComp
 
 
   message: ({start, end, text, severity, badge}) ->
@@ -131,8 +157,8 @@ module.exports = Messenger =
             severity: severity
             badge: badge
     @messages.push msg
+    @sortMessages()
   
-
 
   suggest: ({start, end, text, suggestedCode, badge}) ->
     msg = new Message
@@ -143,10 +169,9 @@ module.exports = Messenger =
             text: text
             severity: 'suggestion'
             badge: badge
-
             suggestion: suggestedCode
-
     @messages.push msg
+    @sortMessages()
 
 
   animateReplacementBlink: (range) ->
@@ -176,29 +201,29 @@ module.exports = Messenger =
       for msg in @messages
         range = msg.getRange()
         if range.start.row >= cursorBuffPos.row
-          @select(msg)
+          @selectAndMoveCursor(msg)
           return
     else
       stopAtNext = false
       for msg in @messages
         if stopAtNext is true
-          @select(msg)
+          @selectAndMoveCursor(msg)
           return
         if msg.selected is true
           stopAtNext = true
     # If nothing, select the first message
-    @select(@messages[0])
+    @selectAndMoveCursor(@messages[0])
 
 
   prevMessage: () ->
     stopAtNext = false
     for msg in @messages.slice(0).reverse()
       if stopAtNext is true
-        @select(msg)
+        @selectAndMoveCursor(msg)
         return
       if msg.selected is true
         stopAtNext = true
-    @select(@messages[@messages.length - 1])
+    @selectAndMoveCursor(@messages[@messages.length - 1])
 
 
   acceptSuggestion: () ->

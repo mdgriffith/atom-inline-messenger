@@ -122,9 +122,11 @@ class Message
     else if @type == 'suggestion'
       return Suggestion.fromSuggestion(this)
 
+
   updateEditor: (editor) ->
     @editor = editor
     @render()
+
 
   refresh: () ->
     if @selected is true
@@ -142,17 +144,19 @@ class Message
         type:'line',
         class:@formatLineClass()})
 
+
   setPositioning: (pos) ->
     if @smallSnippet is true
       @positioning = 'below'
     else if @positioning != pos
       @positioning = pos
 
+
   update: (newData) ->
     requiresRefresh = false
     if 'selected' of newData
       if @selected != newData.selected
-        @selected = newData.selected 
+        @selected = newData.selected
         requiresRefresh = true
 
     if 'positioning' of newData
