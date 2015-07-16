@@ -380,6 +380,17 @@ atom-text-editor::shadow  .inline-message-multiline-highlight-severity-suggestio
 
 
 
+atom-text-editor::shadow .highlights .inline-replacement-flash {
+  .region {
+    transition: background-color 0.5s ease-in-out;
+    background-color: @background-color-warning;
+  }
+  &.flash-on {
+    .region {
+      background-color: transparent;
+    } 
+  }
+}
 
 
 atom-text-editor::shadow .inline-message-gutter {
@@ -412,8 +423,6 @@ atom-text-editor::shadow .inline-message-gutter {
         }
       }
   }
-
- 
 }
 
 
