@@ -102,6 +102,7 @@ module.exports = Messenger =
                 else
                   return 0
       @select(closeMsgs[0])
+    console.log @messages
 
 
   clear: ->
@@ -141,12 +142,22 @@ module.exports = Messenger =
 
 
   sortMessages: () ->
+    # Messages should be sorted by 
+    # start position (closer to top first)
+    # then column position (closer to start, first)
+    # then by size, as far as how many rows spanned (larger -> first)
+    # then by how long the message is (longer -> first)
     @messages.sort (msg1, msg2) -> 
                         range1 = msg1.getRange()
                         range2 = msg2.getRange()
                         startComp = range1.start.compare(range2.start)
                         if startComp == 0
-                          return range1.end.compare(range2.end)
+                          rowSize1 = Math.abs(range1.end.row - range1.start.row)
+                          rowSize2 = Math.abs(range2.end.row - range2.start.row)
+                          if (rowSize1 - rowSize2) == 0
+                            return msg2.text.length - msg1.text.length
+                          else
+                            return rowSize2 - rowSize1
                         else
                           return startComp
 

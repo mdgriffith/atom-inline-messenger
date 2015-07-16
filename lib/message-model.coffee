@@ -31,6 +31,7 @@ class Message
     text = []
     text.push "type: #{@type}"
     text.push "severity: #{@severity}"
+    text.push "text: #{@text}"
     text.push "suggestion: #{@suggestion}"
     text.push "positioning: #{@positioning}"
     text.push "offsetFromTop: #{@offsetFromTop}"
