@@ -1,2 +1,4 @@
 'atom-text-editor':
   'cmd-shift-a': 'atom-inline-messenger:accept-suggestion'
+  'alt-down': 'atom-inline-messenger:next-message'
+  'alt-up': 'atom-inline-messenger:prev-message'

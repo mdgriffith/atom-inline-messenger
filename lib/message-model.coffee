@@ -164,6 +164,10 @@ class Message
       @refresh()
 
 
+  getRange: () ->
+    @highlight.getMarker().getBufferRange()
+
+
 
   destroy: ->
     @destroyed = true

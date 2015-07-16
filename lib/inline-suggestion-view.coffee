@@ -23,7 +23,7 @@ class SuggestionView extends HTMLElement
 
     suggestion = document.createElement('div')
     suggestion.classList.add('suggested')
-    suggestion.textContent = msg.suggestedCode
+    suggestion.textContent = msg.suggestion
     @appendChild(suggestion)
 
     rem = true
