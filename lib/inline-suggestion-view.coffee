@@ -4,6 +4,8 @@ class SuggestionView extends HTMLElement
     @classList.add('inline-message')
     @classList.add('inline-suggestion')
     @classList.add("severity-#{msg.severity}")
+    if msg.correctIndentation is true
+      @classList.add("indentation-correction")
 
     if msg.positioning == "below"
       @classList.add("is-below")

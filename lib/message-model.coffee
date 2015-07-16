@@ -18,15 +18,21 @@ class Message
     @offsetFromTop = 0
     @highlight = null
     @messageBubble = null
+    @correctIndentation = false
     @render()
 
+  requiresIndentCorrection: ->
+    return @editor.indentationForBufferRow(@range[0][0]) != 0
 
-  render: () ->
+  render: ->
     if @editor is null or @editor == ''
       return
 
+    @correctIndentation = @requiresIndentCorrection()
     mark = @editor.markBufferRange(@range, {invalidate: 'never', inlineMsg: true})
     anchor = mark
+
+    mark.onDidChange => @updateMarkerPosition()
 
     if @positioning == 'below'
       anchorRange = [@range[0].slice(), @range[1].slice()]
@@ -123,11 +129,6 @@ class Message
       return Suggestion.fromSuggestion(this)
 
 
-  updateEditor: (editor) ->
-    @editor = editor
-    @render()
-
-
   refresh: () ->
     if @selected is true
       @messageBubble.properties.item.classList.add('is-selected')
@@ -144,12 +145,24 @@ class Message
         type:'line',
         class:@formatLineClass()})
 
+    if @correctIndentation is true
+      @messageBubble.properties.item.classList.add('indentation-correction')
+    else
+      @messageBubble.properties.item.classList.remove('indentation-correction')
+
 
   setPositioning: (pos) ->
     if @smallSnippet is true
       @positioning = 'below'
     else if @positioning != pos
       @positioning = pos
+
+  updateMarkerPosition: () ->
+    @correctIndentation = @requiresIndentCorrection()
+    if @correctIndentation is true
+      @messageBubble.properties.item.classList.add('indentation-correction')
+    else
+      @messageBubble.properties.item.classList.remove('indentation-correction')
 
 
   update: (newData) ->
@@ -166,11 +179,10 @@ class Message
 
     if requiresRefresh is true
       @refresh()
-
+# @correctIndentation = @requiresIndentCorrection()
 
   getRange: () ->
     @highlight.getMarker().getBufferRange()
-
 
 
   destroy: ->
