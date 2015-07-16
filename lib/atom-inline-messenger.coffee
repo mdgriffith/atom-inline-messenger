@@ -7,14 +7,18 @@ module.exports = Messenger =
 
   config:
     messagePositioning:
-        type: "string"
-        default: "Below"
-        description: "Position multiline messages below or to the right of the highlighted text"
-        enum: ["Below", "Right"]
+      type: "string"
+      default: "Below"
+      description: "Position multiline messages below or to the right of the highlighted text"
+      enum: ["Below", "Right"]
     showKeyboardShortcutForSuggestion:
-        type: "boolean"
-        default: true
-        description: "Show keyboard shortcut reminder at the bottom of a suggestion."
+      type: "boolean"
+      default: true
+      description: "Show keyboard shortcut reminder at the bottom of a suggestion."
+    acceptSuggestionAnimation:
+      type: "boolean"
+      default: true
+      description: "Show a small highlight flash when suggested code is accepted."
 
   subscriptions: null
   messages:[]
