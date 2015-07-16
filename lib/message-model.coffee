@@ -1,6 +1,6 @@
 
 MessageView = require './inline-message-view'
-Suggestion = require './inline-suggestion-view'
+
 
 class Message
   constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion}) ->

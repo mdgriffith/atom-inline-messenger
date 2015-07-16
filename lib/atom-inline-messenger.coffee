@@ -106,7 +106,6 @@ module.exports = Messenger =
                 else
                   return 0
       @select(closeMsgs[0])
-    console.log @messages
 
 
   clear: ->
