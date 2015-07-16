@@ -16,24 +16,32 @@ class SuggestionView extends HTMLElement
     if msg.selected is true
       @classList.add("is-selected")
 
-    # Create message element
-    message = document.createElement('div')
-    message.textContent = msg.text
-    message.classList.add('message')
-    @appendChild(message)
 
 
-    suggestion = document.createElement('div')
-    suggestion.classList.add('suggested')
-    suggestion.textContent = msg.suggestion
-    @appendChild(suggestion)
+    if msg.debug is true
+      message = document.createElement('div')
+      message.classList.add('message')
+      message.textContent = msg.debugText()
+      @appendChild(message)
+    else
+      # Create message element
+      message = document.createElement('div')
+      message.textContent = msg.text
+      message.classList.add('message')
+      @appendChild(message)
 
-    rem = true
-    if rem
-      shortcut = document.createElement('div')
-      shortcut.classList.add('keyboard-shortcut-reminder')
-      shortcut.innerHTML = "<span class='kbd'>cmd-shift-enter</span> to accept suggestion"
-      @appendChild(shortcut)
+
+      suggestion = document.createElement('div')
+      suggestion.classList.add('suggested')
+      suggestion.textContent = msg.suggestion
+      @appendChild(suggestion)
+
+      rem = true
+      if rem
+        shortcut = document.createElement('div')
+        shortcut.classList.add('keyboard-shortcut-reminder')
+        shortcut.innerHTML = "<span class='kbd'>cmd-shift-enter</span> to accept suggestion"
+        @appendChild(shortcut)
 
     this
 

@@ -147,7 +147,7 @@ module.exports = Messenger =
                           return startComp
 
 
-  message: ({start, end, text, severity, badge}) ->
+  message: ({start, end, text, severity, debug, badge}) ->
     msg = new Message
             editor: @activeEditor 
             type: 'message'
@@ -156,11 +156,12 @@ module.exports = Messenger =
             text: text
             severity: severity
             badge: badge
+            debug: debug
     @messages.push msg
     @sortMessages()
   
 
-  suggest: ({start, end, text, suggestedCode, badge}) ->
+  suggest: ({start, end, text, suggestedCode, debug, badge}) ->
     msg = new Message
             editor: @activeEditor 
             type: 'suggestion'
@@ -170,6 +171,7 @@ module.exports = Messenger =
             severity: 'suggestion'
             badge: badge
             suggestion: suggestedCode
+            debug: debug
     @messages.push msg
     @sortMessages()
 

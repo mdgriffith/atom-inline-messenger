@@ -20,10 +20,34 @@ class Message
     @highlight = null
     @messageBubble = null
     @correctIndentation = false
+    @indentLevel = 0
     @render()
 
   requiresIndentCorrection: ->
-    return @editor.indentationForBufferRow(@range[0][0]) != 0
+    @indentLevel = @editor.indentationForBufferRow(@range[0][0])
+    return @indentLevel >= 1
+
+  debugText: ->
+    text = []
+    text.push "type: #{@type}"
+    text.push "severity: #{@severity}"
+    text.push "suggestion: #{@suggestion}"
+    text.push "positioning: #{@positioning}"
+    text.push "offsetFromTop: #{@offsetFromTop}"
+    text.push "correctIndentation: #{@correctIndentation}"
+    text.push "indentation: #{@indentLevel}"
+
+    if @highlight isnt null
+      hmarker = @highlight.getMarker().getBufferRange()
+      text.push "highlight range strt:#{hmarker.start.row} #{hmarker.start.column}"
+      text.push "highlight range  end:#{hmarker.end.row} #{hmarker.end.column}"
+
+    if @messageBubble isnt null
+      amarker = @messageBubble.getMarker().getBufferRange()
+      text.push "anchor range strt:#{amarker.start.row} #{amarker.start.column}"
+      text.push "anchor range  end:#{amarker.end.row} #{amarker.end.column}"
+
+    text.join "\n"
 
   render: ->
     if @editor is null or @editor == ''
@@ -32,10 +56,10 @@ class Message
     @correctIndentation = @requiresIndentCorrection()
     mark = @editor.markBufferRange(@range, {invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
-    anchor = mark
-    mark.onDidChange => @updateMarkerPosition()
-    anchorRange = @calculateAnchorRange()
+
+    anchorRange = @calculateAnchorRange(mark)
     anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
+    mark.onDidChange => @updateMarkerPosition()
 
     @messageBubble = @editor.decorateMarker(
       anchor
@@ -86,12 +110,18 @@ class Message
 
 
   updateAnchor: () ->
-    anchorRange = @calculateAnchorRange()
+    anchorRange = @calculateAnchorRange(@highlight.getMarker())
     @messageBubble.getMarker().setBufferRange(anchorRange)
 
 
-  calculateAnchorRange: () ->
-    anchorRange = [@range[0].slice(), @range[1].slice()]
+  updateDebugText: ->
+    @messageBubble.properties.item.textContent = @debugText()
+
+
+  calculateAnchorRange: (marker) ->
+    range = marker.getBufferRange()
+    # copy range
+    anchorRange = [[range.start.row,range.start.column], [range.end.row,range.end.column]]
     if @positioning == 'below'
       if @smallSnippet is true
         anchorRange[0][1] = anchorRange[0][1] + 1
@@ -102,7 +132,6 @@ class Message
       #Set the end of the selection to the same place
       anchorRange[1] = anchorRange[0].slice()
     else if @positioning == "right"
-      anchorRange = [@range[0].slice(), @range[1].slice()]
       anchorRange[0][0] = anchorRange[0][0] + @offsetFromTop
       anchorRange[0][1] = 250
       anchorRange[1] = anchorRange[0].slice()
@@ -163,11 +192,24 @@ class Message
 
   updateMarkerPosition: () ->
     @correctIndentation = @requiresIndentCorrection()
-    @updateAnchor()
+    
     if @correctIndentation is true
-      @messageBubble.properties.item.classList.add('indentation-correction')
+      @messageBubble.properties.item.classList.add 'indentation-correction'
     else
-      @messageBubble.properties.item.classList.remove('indentation-correction')
+      @messageBubble.properties.item.classList.remove 'indentation-correction'
+
+    newOffsetFromTop = @longestLineInMarker(@highlight.getMarker())
+    mark = @messageBubble.getMarker()
+    if newOffsetFromTop != @offsetFromTop
+      @messageBubble.properties.item.classList.remove "up-#{@offsetFromTop}"
+      @messageBubble.properties.item.classList.add "up-#{newOffsetFromTop}"
+      @offsetFromTop = newOffsetFromTop
+
+    @updateAnchor()
+
+
+    if @debug is true
+      @updateDebugText()
 
 
   update: (newData) ->
