@@ -124,13 +124,15 @@ class Message
     anchorRange = [[range.start.row,range.start.column], [range.end.row,range.end.column]]
     if @positioning == 'below'
       if @smallSnippet is true
-        anchorRange[0][1] = anchorRange[0][1] + 1
+        anchorRange[0][1] = anchorRange[0][1] + 0
       else
          # set line to last line in selection
         anchorRange[0][0] = anchorRange[1][0]
-        anchorRange[0][1] = 1
+        anchorRange[0][1] = 0
       #Set the end of the selection to the same place
       anchorRange[1] = anchorRange[0].slice()
+      # console.log "set Range"
+      # console.log anchorRange
     else if @positioning == "right"
       anchorRange[0][0] = anchorRange[0][0] + @offsetFromTop
       anchorRange[0][1] = 250
@@ -206,7 +208,6 @@ class Message
       @offsetFromTop = newOffsetFromTop
 
     @updateAnchor()
-
 
     if @debug is true
       @updateDebugText()

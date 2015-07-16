@@ -8,7 +8,7 @@ module.exports = Messenger =
   config:
     messagePositioning:
         type: "string"
-        default: "Right"
+        default: "Below"
         description: "Position multiline messages below or to the right of the highlighted text"
         enum: ["Below", "Right"]
     showKeyboardShortcutForSuggestion:
@@ -90,7 +90,6 @@ module.exports = Messenger =
               range2 = msg2.getRange()
               delta1 = @pointDistance(cursorPos, range1.start)
               delta2 = @pointDistance(cursorPos, range2.start)
-
               if delta1[0] < delta2[0]
                 return -1
               else if delta1[0] > delta2[0]
@@ -204,35 +203,50 @@ module.exports = Messenger =
   nextMessage: () ->
     if @messages.length == 0
       return
-    if @focus is null
-      # Find the first message after the cursor
-      cursorBuffPos = @activeEditor.getCursorBufferPosition()
+    # Find the first message after the cursor,
+    # and only after the selected oned
+    cursorBuffPos = @activeEditor.getCursorBufferPosition()
+    if @focus isnt null
+      afterFocused = false
+      for msg in @messages
+        range = msg.getRange()
+        if afterFocused is true
+          if range.start.row >= cursorBuffPos.row
+            @selectAndMoveCursor(msg)
+            return
+        if msg.selected is true
+          afterFocused = true
+    else
       for msg in @messages
         range = msg.getRange()
         if range.start.row >= cursorBuffPos.row
           @selectAndMoveCursor(msg)
           return
-    else
-      stopAtNext = false
-      for msg in @messages
-        if stopAtNext is true
-          @selectAndMoveCursor(msg)
-          return
-        if msg.selected is true
-          stopAtNext = true
-    # If nothing, select the first message
     @selectAndMoveCursor(@messages[0])
 
 
   prevMessage: () ->
-    stopAtNext = false
-    for msg in @messages.slice(0).reverse()
-      if stopAtNext is true
-        @selectAndMoveCursor(msg)
-        return
-      if msg.selected is true
-        stopAtNext = true
-    @selectAndMoveCursor(@messages[@messages.length - 1])
+    if @messages.length == 0
+      return
+    cursorBuffPos = @activeEditor.getCursorBufferPosition()
+    if @focus isnt null
+      afterFocused = false
+      for msg in @messages.slice(0).reverse()
+        range = msg.getRange()
+        if afterFocused is true
+          if range.start.row <= cursorBuffPos.row
+            @selectAndMoveCursor(msg)
+            return
+        if msg.selected is true
+          afterFocused = true
+    else
+      for msg in @messages.slice(0).reverse()
+        range = msg.getRange()
+        if range.start.row <= cursorBuffPos.row
+          @selectAndMoveCursor(msg)
+          return
+    @selectAndMoveCursor(@messages[0])
+
 
 
   acceptSuggestion: () ->
