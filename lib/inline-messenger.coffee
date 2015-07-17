@@ -24,8 +24,8 @@ module.exports = Messenger =
   messages:[]
   focus: null
   activeEditor: null
-  fontSizePx = null
-  lineHeightEm = null
+  fontSizePx: null
+  lineHeightEm: null
 
   activate: (state) ->
 
@@ -54,14 +54,14 @@ module.exports = Messenger =
       @subscriptions.add @cursorMovementSubscription()
 
     @subscriptions.add atom.config.observe 'editor.lineHeight', (newValue) =>
-      if @lineHeightEm != newVaue
+      if @lineHeightEm != newValue
         @updateStyle()
 
     @subscriptions.add atom.config.observe 'editor.fontSize', (newValue) =>
-      if @fontSizePx != newVaue
+      if @fontSizePx != newValue
         @updateStyle()
 
-    @subscriptions.add atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
+    @subscriptions.add atom.config.observe 'inline-messenger.messagePositioning', (newValue) =>
       @messages.map (msg) -> msg.update({positioning:newValue.toLowerCase()})
 
 
@@ -151,7 +151,7 @@ module.exports = Messenger =
     fontWidthHeightRatio = 0.618 #This is a guess because I cant find a way to grab character width.  So, golden ratio?
 
     styleList = ("atom-overlay inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
-    styleList = styleList.concat ("atom-overlay inline-message.is-right.right-#{n}{ left:#{(n*fontSizePx)*fontWidthHeightRatio}px; }" for n in [0..250])
+    styleList = styleList.concat ("atom-overlay inline-message.is-right.right-#{n}{ left:#{(n*@fontSizePx)*fontWidthHeightRatio}px; }" for n in [0..250])
     stylesheet = styleList.join("\n")
     ss = atom.styles.addStyleSheet(stylesheet)
 
@@ -194,11 +194,11 @@ module.exports = Messenger =
             type: msgType
             range: range
             suggestion: suggestion
-            positioning: atom.config.get('atom-inline-messaging.messagePositioning').toLowerCase()
+            positioning: atom.config.get('inline-messenger.messagePositioning').toLowerCase()
             text: text
             severity: severity
             debug: debug
-            showShortcuts: atom.config.get('atom-inline-messaging.showKeyboardShortcutForSuggestion')
+            showShortcuts: atom.config.get('inline-messenger.showKeyboardShortcutForSuggestion')
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()
@@ -282,7 +282,7 @@ module.exports = Messenger =
       newRange = activeBuffer.setTextInRange(range, newText)
 
       @focus.destroy()
-      if atom.config.get('atom-inline-messaging.messagePositioning') is true
+      if atom.config.get('inline-messenger.acceptSuggestionAnimation') is true
         @animateReplacementBlink(newRange)
 
 

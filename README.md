@@ -1,6 +1,8 @@
 # Inline Messenger for the Atom Editor
 
-Show messages next to the relevant code.  Also allows for a package to make code suggestions.
+This package provides an inline messaging service for other packages.
+
+With it, a package can show messages next to the relevant, highlighted code,  and optionally make a code suggestion for the selected text.
 
 An example of an inline message message
 ![](https://f.cloud.github.com/assets/671378/2241819/f8418cb8-9ce5-11e3-87e5-109e965986d0.png)
