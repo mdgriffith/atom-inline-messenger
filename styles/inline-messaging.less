@@ -4,18 +4,8 @@
 
 
 @inline-border-radius: 0px;
-@inline-text-color: fadein(@syntax-background-color, 100%);
-@inline-bg-color: @syntax-text-color;
-
-
-
-@halfway-bg: average(@syntax-background-color, #CCCCCC);
-
-
 @inline-text-color: @syntax-background-color;
 @inline-bg-color: @syntax-text-color;
-
-
 @inline-badge-text-color: @syntax-background-color;
 
 
@@ -64,10 +54,9 @@
 
 
 
-.message-style {
+inline-message {
   background-color: @inline-bg-color;
   color: @inline-text-color;
-  
   padding: 2px 8px;
   border-radius: @inline-border-radius;
   white-space: pre;
@@ -104,25 +93,6 @@
     }
     border-color:  darken(@background-color-success, 10%);
   }
-
-  .badge {
-    &:first-letter {
-      text-transform: capitalize;
-    }
-    display:block;
-    // padding: 4px 6px;
-    // border-radius: @inline-border-radius;
-    margin-right: 10px;
-    padding: 0;
-    color: @inline-badge-text-color;
-    text-shadow: none;
-    font-weight: bold;
-    // border-width: 1px;
-    // border-style: solid;
-  }
-  .message {
-    display: inline-block;
-  }
   &.is-selected {
     display:block;
   }
@@ -134,57 +104,43 @@
   &.is-below {
     position: relative;
     margin-top: 8px;
-    margin-left: 3px;
-    // margin-left:9px; 
+    margin-left: 3px; 
     .arrow_up();
     &.indentation-correction {
       margin-left: 10px; 
-      // margin-left: 16px;
     }
   }
+  &.inline-suggestion {
+    .suggested {
+      position:relative;
+      
+      margin-left: -6px;
+      margin-right: -7px;
+      padding-left: 6px;
+      padding-right: 6px;
 
-}
+      padding-top: 5px;
+      padding-bottom: 5px;
 
+      font-family: Courier;
+      white-space: pre;
+      border-left-width: 0;
 
+      margin-top: 5px;
+      margin-bottom: 5px;
 
-.inline-message {
-  .message-style();
-}
+      background-color: fade(@inline-bg-color, 40%);
+      color: @inline-text-color;
 
-.inline-suggestion {
-  .message-style();
-  .suggested {
-    position:relative;
-    
-    margin-left: -6px;
-    margin-right: -7px;
-    padding-left: 6px;
-    padding-right: 6px;
+      border-bottom-right-radius: @inline-border-radius;
+      border-bottom-left-radius: @inline-border-radius;
 
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    font-family: Courier;
-    white-space: pre;
-    border-left-width: 0;
-
-    margin-top: 5px;
-    margin-bottom: 5px;
-
-    background-color: fade(@inline-bg-color, 40%);
-    color: @inline-text-color;
-
-    border-bottom-right-radius: @inline-border-radius;
-    border-bottom-left-radius: @inline-border-radius;
-
-  }
-  .message {
-    display: block;
-  }
-  .keyboard-shortcut-reminder {
-    font-style: italic;
-    font-weight: normal;
-    font-size: 0.8em;
+    }
+    .keyboard-shortcut-reminder {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 0.8em;
+    }
   }
 }
 
@@ -300,26 +256,26 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   // }
 }
 
-atom-text-editor::shadow .inline-message-gutter .icon-right {
-  visibility: visible;
-  &::before {
-    content: "!";
-    color: fadein(@syntax-gutter-background-color, 100%);
-    font-size: 0.85em;
-    font-weight: bold;
-    background-color: @background-color-info;
-    border-radius: 5.5px;
-    padding-left: -2px;
-    width: 11px;
-    height: 11px;
-    text-align: center;
-    letter-spacing: 1px;
-    line-height: 12px;
-    position: relative;
-    top: -1px;
-  }
+// atom-text-editor::shadow .inline-message-gutter .icon-right {
+//   visibility: visible;
+//   &::before {
+//     content: "!";
+//     color: fadein(@syntax-gutter-background-color, 100%);
+//     font-size: 0.85em;
+//     font-weight: bold;
+//     background-color: @background-color-info;
+//     border-radius: 5.5px;
+//     padding-left: -2px;
+//     width: 11px;
+//     height: 11px;
+//     text-align: center;
+//     letter-spacing: 1px;
+//     line-height: 12px;
+//     position: relative;
+//     top: -1px;
+//   }
   
-}
+// }
 
 // atom-text-editor::shadow .inline-message-gutter-multiline  {
 //   &.severity-info .icon-right {     
@@ -341,8 +297,13 @@ atom-text-editor::shadow .inline-message-gutter .icon-right {
 // }
 
 
-@lineFade: 15%;
 
+
+// ---------------------------------
+// Multiline message, line decoration
+// ----------------------------------
+
+@lineFade: 15%;
 .line-idle(@color) {
   padding-left: 8px;
   margin-left: -10px;
@@ -352,7 +313,6 @@ atom-text-editor::shadow .inline-message-gutter .icon-right {
 .line-selected(@color) {
   background-color: fade(@color, @lineFade);
 }
-
 
 // This class name mangling is because atom doesnt accept multiple classes per a line decoration
 atom-text-editor::shadow  .inline-message-multiline-highlight-severity-info {
@@ -386,6 +346,10 @@ atom-text-editor::shadow  .inline-message-multiline-highlight-severity-suggestio
 
 
 
+// ---------------------------------
+// Animation for accepting a suggestion
+// ----------------------------------
+
 atom-text-editor::shadow .highlights .inline-replacement-flash {
   .region {
     transition: background-color 0.5s ease-in-out;
@@ -399,36 +363,36 @@ atom-text-editor::shadow .highlights .inline-replacement-flash {
 }
 
 
-atom-text-editor::shadow .inline-message-gutter {
-  &.severity-info {
-     .icon-right {
-        &::before {
-            background-color: @background-color-info;
-        }
-      }
-  }
-  &.severity-warning {
-     .icon-right {
-        &::before {
-            background-color: @background-color-warning;
-        }
-      }
-  }
-  &.severity-error {
-     .icon-right {
-        &::before {
-            background-color: @background-color-error;
-        }
-      }
-  }
-  &.severity-suggestion {
-     .icon-right {
-        &::before {
-            content: "?";
-            background-color: @background-color-success;
-        }
-      }
-  }
-}
+// atom-text-editor::shadow .inline-message-gutter {
+//   &.severity-info {
+//      .icon-right {
+//         &::before {
+//             background-color: @background-color-info;
+//         }
+//       }
+//   }
+//   &.severity-warning {
+//      .icon-right {
+//         &::before {
+//             background-color: @background-color-warning;
+//         }
+//       }
+//   }
+//   &.severity-error {
+//      .icon-right {
+//         &::before {
+//             background-color: @background-color-error;
+//         }
+//       }
+//   }
+//   &.severity-suggestion {
+//      .icon-right {
+//         &::before {
+//             content: "?";
+//             background-color: @background-color-success;
+//         }
+//       }
+//   }
+// }
 
 

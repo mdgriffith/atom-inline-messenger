@@ -139,7 +139,7 @@ module.exports = Messenger =
     lineHeightEm = atom.config.get("editor.lineHeight")
     fontSizePx = atom.config.get("editor.fontSize")
     lineHeight = lineHeightEm * fontSizePx
-    styleList = ("atom-overlay .inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
+    styleList = ("atom-overlay inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
     stylesheet = styleList.join("\n")
     ss = atom.styles.addStyleSheet(stylesheet)
 
@@ -186,6 +186,7 @@ module.exports = Messenger =
             text: text
             severity: severity
             debug: debug
+            showShortcuts: atom.config.get('atom-inline-messaging.showKeyboardShortcutForSuggestion')
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()
@@ -269,7 +270,8 @@ module.exports = Messenger =
       newRange = activeBuffer.setTextInRange(range, newText)
 
       @focus.destroy()
-      @animateReplacementBlink(newRange)
+      if atom.config.get('atom-inline-messaging.messagePositioning') is true
+        @animateReplacementBlink(newRange)
 
 
   provideInlineMessenger: () ->
