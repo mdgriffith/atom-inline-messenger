@@ -7,7 +7,6 @@ class Message
     @editor = editor 
     @debug = debug
     @type = type
-    # @range = range
     @smallSnippet = range[0][0] == range[1][0]
     @text = text
     @suggestion = suggestion
@@ -198,7 +197,6 @@ class Message
 
 
   setPositioning: (pos, range) ->
-   
     if @smallSnippet is true and range.end.row >= @editor.getLastBufferRow() - 2
       @positioning = 'right'
     else if @smallSnippet is true
@@ -212,7 +210,6 @@ class Message
   updateMarkerPosition: () ->
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
-    
     if @correctIndentation is true
       @addMessageBubbleClass 'indentation-correction'
     else
@@ -231,7 +228,6 @@ class Message
       @offsetFromTop = newOffsetFromTop
 
     @updateAnchor()
-
     if @debug is true
       @updateDebugText()
 
@@ -239,8 +235,10 @@ class Message
   addMessageBubbleClass: (cls) ->
     @messageBubble.properties.item.firstChild.classList.add cls
 
+
   removeMessageBubbleClass: (cls) ->
     @messageBubble.properties.item.firstChild.classList.remove cls
+
 
   update: (newData) ->
     requiresRefresh = false

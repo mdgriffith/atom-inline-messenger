@@ -24,6 +24,8 @@ module.exports = Messenger =
   messages:[]
   focus: null
   activeEditor: null
+  fontSizePx = null
+  lineHeightEm = null
 
   activate: (state) ->
 
@@ -52,10 +54,12 @@ module.exports = Messenger =
       @subscriptions.add @cursorMovementSubscription()
 
     @subscriptions.add atom.config.observe 'editor.lineHeight', (newValue) =>
-      @updateStyle()
+      if @lineHeightEm != newVaue
+        @updateStyle()
 
     @subscriptions.add atom.config.observe 'editor.fontSize', (newValue) =>
-      @updateStyle()
+      if @fontSizePx != newVaue
+        @updateStyle()
 
     @subscriptions.add atom.config.observe 'atom-inline-messaging.messagePositioning', (newValue) =>
       @messages.map (msg) -> msg.update({positioning:newValue.toLowerCase()})
@@ -141,9 +145,9 @@ module.exports = Messenger =
 
 
   updateStyle: () ->
-    lineHeightEm = atom.config.get("editor.lineHeight")
-    fontSizePx = atom.config.get("editor.fontSize")
-    lineHeight = lineHeightEm * fontSizePx
+    @lineHeightEm = atom.config.get("editor.lineHeight")
+    @fontSizePx = atom.config.get("editor.fontSize")
+    lineHeight = @lineHeightEm * @fontSizePx
     fontWidthHeightRatio = 0.618 #This is a guess because I cant find a way to grab character width.  So, golden ratio?
 
     styleList = ("atom-overlay inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
