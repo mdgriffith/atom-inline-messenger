@@ -203,6 +203,8 @@ class Message
       @positioning = 'right'
     else if @smallSnippet is true
       @positioning = 'below'
+    else if range.end.row >= @editor.getLastBufferRow() - 7
+      @positioning = 'right'
     else if @positioning != pos
       @positioning = pos
 
