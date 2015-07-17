@@ -3,7 +3,7 @@ MessageView = require './inline-message-view'
 
 
 class Message
-  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion}) ->
+  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion, showShortcuts}) ->
     @editor = editor 
     @debug = debug
     @type = type
@@ -20,6 +20,7 @@ class Message
     @highlight = null
     @messageBubble = null
     @correctIndentation = false
+    @showShortcuts = showShortcuts
     @indentLevel = 0
     @render()
 
