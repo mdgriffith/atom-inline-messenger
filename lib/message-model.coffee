@@ -7,7 +7,7 @@ class Message
     @editor = editor 
     @debug = debug
     @type = type
-    @range = range
+    # @range = range
     @smallSnippet = range[0][0] == range[1][0]
     @text = text
     @suggestion = suggestion
@@ -22,55 +22,18 @@ class Message
     @correctIndentation = false
     @showShortcuts = showShortcuts
     @indentLevel = 0
-    @render()
-
-  requiresIndentCorrection: ->
-    @indentLevel = @editor.indentationForBufferRow(@range[0][0])
-    return @indentLevel >= 1
-
-  debugText: ->
-    text = []
-    text.push "type: #{@type}"
-    text.push "severity: #{@severity}"
-    text.push "text: #{@text}"
-    text.push "suggestion: #{@suggestion}"
-    text.push "positioning: #{@positioning}"
-    text.push "offsetFromTop: #{@offsetFromTop}"
-    text.push "correctIndentation: #{@correctIndentation}"
-    text.push "indentation: #{@indentLevel}"
-
-    if @highlight isnt null
-      hmarker = @highlight.getMarker().getBufferRange()
-      text.push "highlight range strt:#{hmarker.start.row} #{hmarker.start.column}"
-      text.push "highlight range  end:#{hmarker.end.row} #{hmarker.end.column}"
-
-    if @messageBubble isnt null
-      amarker = @messageBubble.getMarker().getBufferRange()
-      text.push "anchor range strt:#{amarker.start.row} #{amarker.start.column}"
-      text.push "anchor range  end:#{amarker.end.row} #{amarker.end.column}"
-
-    text.join "\n"
-
-  render: ->
+    
     if @editor is null or @editor == ''
       return
 
-    @correctIndentation = @requiresIndentCorrection()
-    mark = @editor.markBufferRange(@range, {invalidate: 'never', inlineMsg: true})
+    
+    mark = @editor.markBufferRange(range, {invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
 
     anchorRange = @calculateAnchorRange(mark)
     anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
     mark.onDidChange => @updateMarkerPosition()
 
-    @messageBubble = @editor.decorateMarker(
-      anchor
-      {
-        type: 'overlay',
-        class: 'inline-message'
-        item: MessageView.fromMsg(this)
-      }
-    )
 
     if @smallSnippet is true
       @highlight = @editor.decorateMarker(
@@ -88,7 +51,55 @@ class Message
           class: @formatLineClass()
         }
       )
+    @correctIndentation = @requiresIndentCorrection()
+    @correctLastLine = @requiresLastLineCorrection()
+ 
+    @messageBubble = @editor.decorateMarker(
+      anchor
+      {
+        type: 'overlay',
+        class: 'inline-message'
+        item: MessageView.fromMsg(this)
+      }
+    )
 
+  requiresIndentCorrection: ->
+    range = @getRange()
+    @indentLevel = @editor.indentationForBufferRow(range.start.row)
+    lineLength = @editor.lineTextForScreenRow(range.end.row).length
+    rowSpan = Math.abs(range.end.row - range.start.row)
+    return @indentLevel >= 1 or (rowSpan == 0 and lineLength == 0)
+
+  requiresLastLineCorrection: ->
+    range = @getRange()
+    lineLength = @editor.lineTextForScreenRow(range.end.row).length
+    rowSpan = Math.abs(range.end.row - range.start.row)
+    return lineLength == 0 and rowSpan != 0
+
+
+  debugText: ->
+    text = []
+    text.push "type: #{@type}"
+    text.push "severity: #{@severity}"
+    text.push "text: #{@text}"
+    text.push "suggestion: #{@suggestion}"
+    text.push "positioning: #{@positioning}"
+    text.push "offsetFromTop: #{@offsetFromTop}"
+    text.push "correctIndentation: #{@correctIndentation}"
+    text.push "indentation: #{@indentLevel}"
+    text.push "emptyLastLine: #{@correctLastLine}"
+
+    if @highlight isnt null
+      hmarker = @highlight.getMarker().getBufferRange()
+      text.push "highlight range strt:#{hmarker.start.row} #{hmarker.start.column}"
+      text.push "highlight range  end:#{hmarker.end.row} #{hmarker.end.column}"
+
+    if @messageBubble isnt null
+      amarker = @messageBubble.getMarker().getBufferRange()
+      text.push "anchor range strt:#{amarker.start.row} #{amarker.start.column}"
+      text.push "anchor range  end:#{amarker.end.row} #{amarker.end.column}"
+
+    text.join "\n"
 
   formatHighlightClass: () ->
     classList = ["inline-message-selection-highlight"]
@@ -189,11 +200,17 @@ class Message
 
   updateMarkerPosition: () ->
     @correctIndentation = @requiresIndentCorrection()
+    @correctLastLine = @requiresLastLineCorrection()
     
     if @correctIndentation is true
       @messageBubble.properties.item.classList.add 'indentation-correction'
     else
       @messageBubble.properties.item.classList.remove 'indentation-correction'
+
+    if @correctLastLine is true
+      @messageBubble.properties.item.classList.add 'empty-lastline-correction'
+    else
+      @messageBubble.properties.item.classList.remove 'empty-lastline-correction'
 
     newOffsetFromTop = @longestLineInMarker(@highlight.getMarker())
     mark = @messageBubble.getMarker()
