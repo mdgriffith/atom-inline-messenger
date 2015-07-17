@@ -16,7 +16,9 @@ class MessageView extends HTMLElement
       @classList.add("is-below")
     else if msg.positioning == "right"
       @classList.add("is-right")
-      @classList.add("up-#{msg.offsetFromTop}")
+      @classList.add("right-#{msg.longestLineLength}")
+      @classList.add("up-0")
+      # @classList.add("up-#{msg.offsetFromTop}")
 
     if msg.selected is true
       @classList.add("is-selected")

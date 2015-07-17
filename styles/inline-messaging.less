@@ -52,7 +52,10 @@
   }
 }
 
-
+.shrink-wrap {
+  width:0px;
+  height:0px;
+}
 
 inline-message {
   background-color: @inline-bg-color;
@@ -94,7 +97,7 @@ inline-message {
     border-color:  darken(@background-color-success, 10%);
   }
   &.is-selected {
-    display:block;
+    display:inline-block;
   }
   &.is-right {
     position: relative;

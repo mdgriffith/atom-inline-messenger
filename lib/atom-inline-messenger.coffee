@@ -14,7 +14,7 @@ module.exports = Messenger =
     showKeyboardShortcutForSuggestion:
       type: "boolean"
       default: true
-      description: "Show keyboard shortcut reminder at the bottom of a suggestion."
+      description: "At the bottom of a suggestion, Show keyboard shortcut reminder for accepting it."
     acceptSuggestionAnimation:
       type: "boolean"
       default: true
@@ -144,7 +144,10 @@ module.exports = Messenger =
     lineHeightEm = atom.config.get("editor.lineHeight")
     fontSizePx = atom.config.get("editor.fontSize")
     lineHeight = lineHeightEm * fontSizePx
+    fontWidthHeightRatio = 0.618 #This is a guess because I cant find a way to grab character width.  So, golden ratio?
+
     styleList = ("atom-overlay inline-message.is-right.up-#{n}{ top:#{(n+1)*lineHeight*-1}px; }" for n in [0..250])
+    styleList = styleList.concat ("atom-overlay inline-message.is-right.right-#{n}{ left:#{(n*fontSizePx)*fontWidthHeightRatio}px; }" for n in [0..250])
     stylesheet = styleList.join("\n")
     ss = atom.styles.addStyleSheet(stylesheet)
 

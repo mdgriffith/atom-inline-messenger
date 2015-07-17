@@ -21,14 +21,14 @@ class Message
     @correctIndentation = false
     @showShortcuts = showShortcuts
     @indentLevel = 0
-    
+    @longestLineLength = 0
     
     if @editor is null or @editor == ''
       return
 
-    
     mark = @editor.markBufferRange(range, {invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
+
     @positioning =  @setPositioning(positioning, mark.getBufferRange())
     anchorRange = @calculateAnchorRange(mark)
     anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
@@ -53,12 +53,16 @@ class Message
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
  
+    shrinkWrap = document.createElement('div')
+    shrinkWrap.classList.add('shrink-wrap')
+    shrinkWrap.appendChild MessageView.fromMsg(this)
+
     @messageBubble = @editor.decorateMarker(
       anchor
       {
         type: 'overlay',
         class: 'inline-message'
-        item: MessageView.fromMsg(this)
+        item: shrinkWrap
       }
     )
     if @debug is true
@@ -131,7 +135,7 @@ class Message
 
 
   updateDebugText: ->
-    @messageBubble.properties.item.textContent = @debugText()
+    @messageBubble.properties.item.firstChild.textContent = @debugText()
 
 
   calculateAnchorRange: (marker) ->
@@ -147,11 +151,9 @@ class Message
         anchorRange[0][1] = 1
       #Set the end of the selection to the same place
       anchorRange[1] = anchorRange[0].slice()
-      # console.log "set Range"
-      # console.log anchorRange
     else if @positioning == "right"
-      anchorRange[0][0] = anchorRange[0][0] + @offsetFromTop
-      anchorRange[0][1] = 250
+      anchorRange[0][0] = anchorRange[0][0]
+      anchorRange[0][1] = 0
       anchorRange[1] = anchorRange[0].slice()
     return anchorRange
 
@@ -169,14 +171,15 @@ class Message
         longestLineLength = currentRowLength
         longestLineRowOffset = offset
       offset = offset + 1
+    @longestLineLength = longestLineLength
     longestLineRowOffset
 
 
   refresh: () ->
     if @selected is true
-      @messageBubble.properties.item.classList.add('is-selected')
+      @addMessageBubbleClass('is-selected')
     else
-      @messageBubble.properties.item.classList.remove('is-selected')
+      @removeMessageBubbleClass('is-selected')
 
     if @smallSnippet is true
       @highlight.setProperties({
@@ -189,9 +192,9 @@ class Message
         class:@formatLineClass()})
 
     if @correctIndentation is true
-      @messageBubble.properties.item.classList.add('indentation-correction')
+      @addMessageBubbleClass('indentation-correction')
     else
-      @messageBubble.properties.item.classList.remove('indentation-correction')
+      @removeMessageBubbleClass('indentation-correction')
 
 
   setPositioning: (pos, range) ->
@@ -209,20 +212,20 @@ class Message
     @correctLastLine = @requiresLastLineCorrection()
     
     if @correctIndentation is true
-      @messageBubble.properties.item.classList.add 'indentation-correction'
+      @addMessageBubbleClass 'indentation-correction'
     else
-      @messageBubble.properties.item.classList.remove 'indentation-correction'
+      @removeMessageBubbleClass 'indentation-correction'
 
     if @correctLastLine is true
-      @messageBubble.properties.item.classList.add 'empty-lastline-correction'
+      @addMessageBubbleClass 'empty-lastline-correction'
     else
-      @messageBubble.properties.item.classList.remove 'empty-lastline-correction'
+      @removeMessageBubbleClass 'empty-lastline-correction'
 
     newOffsetFromTop = @longestLineInMarker(@highlight.getMarker())
     mark = @messageBubble.getMarker()
     if newOffsetFromTop != @offsetFromTop
-      @messageBubble.properties.item.classList.remove "up-#{@offsetFromTop}"
-      @messageBubble.properties.item.classList.add "up-#{newOffsetFromTop}"
+      @removeMessageBubbleClass "up-#{@offsetFromTop}"
+      @addMessageBubbleClass "up-#{newOffsetFromTop}"
       @offsetFromTop = newOffsetFromTop
 
     @updateAnchor()
@@ -230,6 +233,12 @@ class Message
     if @debug is true
       @updateDebugText()
 
+
+  addMessageBubbleClass: (cls) ->
+    @messageBubble.properties.item.firstChild.classList.add cls
+
+  removeMessageBubbleClass: (cls) ->
+    @messageBubble.properties.item.firstChild.classList.remove cls
 
   update: (newData) ->
     requiresRefresh = false
