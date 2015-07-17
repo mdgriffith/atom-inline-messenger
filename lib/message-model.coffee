@@ -15,7 +15,6 @@ class Message
     @badge = badge
     @destroyed = false
     @selected = false
-    @positioning =  @setPositioning(positioning)
     @offsetFromTop = 0
     @highlight = null
     @messageBubble = null
@@ -23,18 +22,17 @@ class Message
     @showShortcuts = showShortcuts
     @indentLevel = 0
     
+    
     if @editor is null or @editor == ''
       return
 
     
     mark = @editor.markBufferRange(range, {invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
-
+    @positioning =  @setPositioning(positioning, mark.getBufferRange())
     anchorRange = @calculateAnchorRange(mark)
     anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
-    mark.onDidChange => @updateMarkerPosition()
-
-
+    
     if @smallSnippet is true
       @highlight = @editor.decorateMarker(
         mark
@@ -51,6 +49,7 @@ class Message
           class: @formatLineClass()
         }
       )
+    
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
  
@@ -62,6 +61,10 @@ class Message
         item: MessageView.fromMsg(this)
       }
     )
+    if @debug is true
+      @updateDebugText()
+
+    mark.onDidChange => @updateMarkerPosition()
 
   requiresIndentCorrection: ->
     range = @getRange()
@@ -191,8 +194,11 @@ class Message
       @messageBubble.properties.item.classList.remove('indentation-correction')
 
 
-  setPositioning: (pos) ->
-    if @smallSnippet is true
+  setPositioning: (pos, range) ->
+   
+    if @smallSnippet is true and range.end.row >= @editor.getLastBufferRow() - 2
+      @positioning = 'right'
+    else if @smallSnippet is true
       @positioning = 'below'
     else if @positioning != pos
       @positioning = pos
@@ -234,7 +240,7 @@ class Message
 
     if 'positioning' of newData
       if @positioning != newData.positioning
-        @setPositioning(newData.positioning)
+        @setPositioning(newData.positioning, @getRange())
         requiresRefresh = true
 
     if requiresRefresh is true
