@@ -85,7 +85,7 @@ module.exports = Messenger =
     if cursorRange.start != cursorRange.end
       @clearSelection()
       return
-    cursorPos = cursor.getBufferPosition()\
+    cursorPos = cursor.getBufferPosition()
     closeMsgs = []
     for msg in @messages
       if msg.getRange().containsPoint(cursorPos)
@@ -136,8 +136,8 @@ module.exports = Messenger =
 
 
   selectAndMoveCursor: (msg) ->
-    @activeEditor.setCursorBufferPosition(msg.getRange().start)
-    @select(msg)
+    @activeEditor.setCursorBufferPosition(msg.getRange().start, {autoscroll:false})
+    @activeEditor.scrollToCursorPosition()
 
 
   updateStyle: () ->
