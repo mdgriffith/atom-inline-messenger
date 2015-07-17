@@ -109,6 +109,9 @@ inline-message {
     &.indentation-correction {
       margin-left: 10px; 
     }
+    &.empty-lastline-correction {
+      margin-top: -10px; 
+    }
   }
   &.inline-suggestion {
     .suggested {
@@ -148,6 +151,8 @@ inline-message {
 
 @unselectedFade: 10%;
 @selectedFade: 50%;
+
+// Inline highlight and underline
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
   .region {
   }
@@ -233,68 +238,7 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
       }
     }
   }
-  // &.severity-info {
-  //   .region {
-  //     border-left: 1px dashed @background-color-info;
-  //     // background-color: fade(@background-color-info, @unselectedFade);
-  //   }
-  // }
-  // &.severity-warning {
-  //   .region {
-  //     border-left: 1px dashed @background-color-warning;
-  //   }
-  // }
-  // &.severity-error {
-  //   .region {
-  //     border-left: 1px dashed @background-color-error;
-  //   }
-  // }
-  // &.severity-suggestion {
-  //   .region {
-  //     border-left: 1px dashed @background-color-success;
-  //   }
-  // }
 }
-
-// atom-text-editor::shadow .inline-message-gutter .icon-right {
-//   visibility: visible;
-//   &::before {
-//     content: "!";
-//     color: fadein(@syntax-gutter-background-color, 100%);
-//     font-size: 0.85em;
-//     font-weight: bold;
-//     background-color: @background-color-info;
-//     border-radius: 5.5px;
-//     padding-left: -2px;
-//     width: 11px;
-//     height: 11px;
-//     text-align: center;
-//     letter-spacing: 1px;
-//     line-height: 12px;
-//     position: relative;
-//     top: -1px;
-//   }
-  
-// }
-
-// atom-text-editor::shadow .inline-message-gutter-multiline  {
-//   &.severity-info .icon-right {     
-//     visibility: visible;
-//     border-right:2px dotted @background-color-info;
-//   }
-//   &.severity-warning .icon-right {
-//     visibility: visible;
-//     border-right:2px dotted @background-color-warning;
-//   }
-//   &.severity-error .icon-right {
-//     visibility: visible;
-//     border-right:2px dotted @background-color-error;
-//   }
-//   &.severity-suggestion .icon-right {
-//     visibility: visible;
-//     border-right:2px dotted @background-color-success;
-//   }
-// }
 
 
 
@@ -361,38 +305,3 @@ atom-text-editor::shadow .highlights .inline-replacement-flash {
     } 
   }
 }
-
-
-// atom-text-editor::shadow .inline-message-gutter {
-//   &.severity-info {
-//      .icon-right {
-//         &::before {
-//             background-color: @background-color-info;
-//         }
-//       }
-//   }
-//   &.severity-warning {
-//      .icon-right {
-//         &::before {
-//             background-color: @background-color-warning;
-//         }
-//       }
-//   }
-//   &.severity-error {
-//      .icon-right {
-//         &::before {
-//             background-color: @background-color-error;
-//         }
-//       }
-//   }
-//   &.severity-suggestion {
-//      .icon-right {
-//         &::before {
-//             content: "?";
-//             background-color: @background-color-success;
-//         }
-//       }
-//   }
-// }
-
-
