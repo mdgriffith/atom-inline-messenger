@@ -80,7 +80,12 @@ module.exports = Messenger =
         
 
   selectUnderCursor: (cursor) ->
-    cursorPos = @activeEditor.getCursorBufferPosition()
+    cursor = @activeEditor.getLastCursor()
+    cursorRange = cursor.getMarker().getBufferRange()
+    if cursorRange.start != cursorRange.end
+      @clearSelection()
+      return
+    cursorPos = cursor.getBufferPosition()\
     closeMsgs = []
     for msg in @messages
       if msg.getRange().containsPoint(cursorPos)
