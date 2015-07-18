@@ -1,17 +1,15 @@
 {
   "name": "inline-messenger",
   "main": "./lib/inline-messenger.coffee",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Inline Messaging in the Atom Editor",
   "repository": "https://github.com/mdgriffith/atom-inline-messenger",
   "license": "MIT",
-  "author":"mdgriffith",
+  "author": "mdgriffith",
   "engines": {
     "atom": ">=0.174.0 <2.0.0"
   },
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "providedServices": {
     "inline-messaging": {
       "description": "Send messages next to highlighted code.",
@@ -21,4 +19,3 @@
     }
   }
 }
-
