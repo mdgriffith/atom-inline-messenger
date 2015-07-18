@@ -8,7 +8,7 @@ An example of an inline message
 ![Inline Messages](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-message.gif)
 
 An example of a message with a code suggestion
-![Inline Suggestion](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-suggestion.gif)
+![Suggestion](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-suggestion.gif?token=AC54XbSnGvf4CzBU9ItmUo31uRNDewc2ks5Vsvh_wA%3D%3D)
 
 ## Getting Started
 
