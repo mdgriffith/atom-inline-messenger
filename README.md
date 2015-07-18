@@ -5,10 +5,10 @@ This package provides an inline messaging service for other packages.
 With it, a package can show messages next to the relevant, highlighted code,  and optionally make a code suggestion for the selected text.
 
 An example of an inline message
-![](https://f.cloud.github.com/assets/671378/2241819/f8418cb8-9ce5-11e3-87e5-109e965986d0.png)
+![Inline Messages](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-message.gif)
 
 An example of a message with a code suggestion
-![](https://f.cloud.github.com/assets/671378/2241819/f8418cb8-9ce5-11e3-87e5-109e965986d0.png)
+![Inline Suggestion](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-suggestion.gif)
 
 ## Getting Started
 
