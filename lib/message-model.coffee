@@ -95,6 +95,7 @@ class Message
     text.push "correctIndentation: #{@correctIndentation}"
     text.push "indentation: #{@indentLevel}"
     text.push "emptyLastLine: #{@correctLastLine}"
+    text.push "offsetFromLeft: #{@longestLineLength}"
 
     if @highlight isnt null
       hmarker = @highlight.getMarker().getBufferRange()
@@ -174,7 +175,10 @@ class Message
         longestLineLength = currentRowLength
         longestLineRowOffset = offset
       offset = offset + 1
-    @longestLineLength = longestLineLength
+    if longestLineLength > 40
+      @longestLineLength = longestLineLength
+    else
+      @longestLineLength = 40
     longestLineRowOffset
 
 
@@ -203,8 +207,8 @@ class Message
   setPositioning: (pos, range) ->
     if @smallSnippet is true and range.end.row >= @editor.getLastBufferRow() - 2
       @positioning = 'right'
-    else if @smallSnippet is true
-      @positioning = 'below'
+    # else if @smallSnippet is true
+      # @positioning = 'below'
     else if range.end.row >= @editor.getLastBufferRow() - 7
       @positioning = 'right'
     else if @positioning != pos
