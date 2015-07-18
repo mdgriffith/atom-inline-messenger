@@ -3,8 +3,8 @@ MessageView = require './inline-message-view'
 
 
 class Message
-  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion, showShortcuts}) ->
-    @editor = editor 
+  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion, showShortcuts, shortcut}) ->
+    @editor = editor
     @debug = debug
     @type = type
     @smallSnippet = range[0][0] == range[1][0]
@@ -21,17 +21,18 @@ class Message
     @showShortcuts = showShortcuts
     @indentLevel = 0
     @longestLineLength = 0
-    
+    @shortcut = shortcut
+
     if @editor is null or @editor == ''
       return
 
-    mark = @editor.markBufferRange(range, {invalidate: 'never', inlineMsg: true})
+    mark = @editor.markBufferRange(range,{invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
 
     @positioning =  @setPositioning(positioning, mark.getBufferRange())
     anchorRange = @calculateAnchorRange(mark)
     anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
-    
+
     if @smallSnippet is true
       @highlight = @editor.decorateMarker(
         mark
@@ -48,10 +49,10 @@ class Message
           class: @formatLineClass()
         }
       )
-    
+
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
- 
+
     shrinkWrap = document.createElement('div')
     shrinkWrap.classList.add('shrink-wrap')
     shrinkWrap.appendChild MessageView.fromMsg(this)
@@ -97,7 +98,8 @@ class Message
 
     if @highlight isnt null
       hmarker = @highlight.getMarker().getBufferRange()
-      text.push "highlight range strt:#{hmarker.start.row} #{hmarker.start.column}"
+      start = hmarker.start
+      text.push "highlight range strt:#{start.row} #{start.column}"
       text.push "highlight range  end:#{hmarker.end.row} #{hmarker.end.column}"
 
     if @messageBubble isnt null
@@ -118,7 +120,7 @@ class Message
 
 
   formatLineClass: () ->
-    # The class name mangling is because atom wont accept 
+    # The class name mangling is because atom wont accept
     # multiple classes for a line decoration
     # Not that big of a deal, I suppose
     cls = "inline-message-multiline-highlight"
@@ -140,7 +142,9 @@ class Message
   calculateAnchorRange: (marker) ->
     range = marker.getBufferRange()
     # copy range
-    anchorRange = [[range.start.row,range.start.column], [range.end.row,range.end.column]]
+    start = [range.start.row,range.start.column]
+    end = [range.end.row,range.end.column]
+    anchorRange = [start, end]
     if @positioning == 'below'
       if @smallSnippet is true
         anchorRange[0][1] = anchorRange[0][1] + 1
@@ -181,14 +185,14 @@ class Message
       @removeMessageBubbleClass('is-selected')
 
     if @smallSnippet is true
-      @highlight.setProperties({
-                type:'highlight'
-                class:@formatHighlightClass()
-                  })
+      @highlight.setProperties
+        type:'highlight'
+        class:@formatHighlightClass()
+
     else
-      @highlight.setProperties({
+      @highlight.setProperties
         type:'line',
-        class:@formatLineClass()})
+        class:@formatLineClass()
 
     if @correctIndentation is true
       @addMessageBubbleClass('indentation-correction')

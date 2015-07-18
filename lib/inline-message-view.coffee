@@ -3,7 +3,7 @@ class MessageView extends HTMLElement
   initialize: (msg) ->
     # @classList.add('inline-message')
     if msg.type == 'suggestion'
-       @classList.add('inline-suggestion')
+      @classList.add('inline-suggestion')
 
     @classList.add("severity-#{msg.severity}")
     if msg.correctIndentation is true
@@ -47,7 +47,8 @@ class MessageView extends HTMLElement
       if msg.showShortcuts is true
         shortcut = document.createElement('div')
         shortcut.classList.add('keyboard-shortcut-reminder')
-        shortcut.innerHTML = "<span class='kbd'>cmd-shift-enter</span> to accept suggestion"
+        kbd = "<span class='kbd'>#{msg.shortcut}</span>"
+        shortcut.innerHTML = "#{kbd} to accept suggestion"
         @appendChild(shortcut)
 
     this

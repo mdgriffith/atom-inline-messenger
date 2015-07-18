@@ -4,7 +4,7 @@ This package provides an inline messaging service for other packages.
 
 With it, a package can show messages next to the relevant, highlighted code,  and optionally make a code suggestion for the selected text.
 
-An example of an inline message message
+An example of an inline message
 ![](https://f.cloud.github.com/assets/671378/2241819/f8418cb8-9ce5-11e3-87e5-109e965986d0.png)
 
 An example of a message with a code suggestion
@@ -32,18 +32,18 @@ it, include `inline-messenger` in the `consumedServices` section of your `packag
 
 Then call methods on the service in your package's main module.
 
-There is only one function, which is `message` which creates a message in the active editor. 
+The `message` creates a message in the active editor.
 
 ```coffee
 module.exports =
-  activate: -> 
+  activate: ->
     @messages = []
 
   consumeInlineMessenger: (messenger) ->
     @messenger = messenger
 
     @messages.push @messenger.message
-              range: [[22,0], [25,8]] 
+              range: [[22,0], [25,8]]
               text: "A New Message"
               severity: "warning"
 
@@ -70,7 +70,7 @@ The message method takes the following parameters
 
     * `next-message` -> Jumps to the next message.  The default keyboard shortcut is alt-down
     * `prev-message` -> Jumps to the previous message.  The default keyboard shortcut is alt-up
-    * `accept-suggestion` -> If the currently viewed message is a code suggestion, this command will make the suggested changes for you.  The default is cmd-shift-a
+    * `accept-suggestion` -> If the current message is a code suggestion, this command will make the suggested changes for you.  The default is cmd-shift-a
 
 
 ## Settings
@@ -78,12 +78,3 @@ The message method takes the following parameters
 * `Message Positioning` - For messages that span multiple lines, show them either below the highlighted code or to the right.  Defaults to below.
 * `Show Keyboard Shortcut For Suggestions` - Show keyboard shortcut reminder at the bottom of a suggestion.  Defaults to true.
 * `Accept Suggestion Animation` - Show a small highlight flash when suggested code is accepted.  Defaults to true.
-
-
-
-
-
-
-
-
-
