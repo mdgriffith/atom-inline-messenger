@@ -266,9 +266,9 @@ class Message
 
   destroy: ->
     @destroyed = true
-    if @highlight
+    if @highlight isnt null
       @highlight.destroy()
-    if @messageBubble
+    if @messageBubble isnt null
       @messageBubble.destroy()
 
 

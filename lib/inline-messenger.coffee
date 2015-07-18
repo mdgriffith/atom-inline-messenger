@@ -216,23 +216,6 @@ module.exports = Messenger =
     @sortMessages()
     @selectUnderCursor()
 
-  animateReplacementBlink: (range) ->
-    marker = @activeEditor.markBufferRange(range, {invalidate: 'never', inlineReplacementFlash: true})
-    flash = @activeEditor.decorateMarker(
-      marker
-      {
-        type: 'highlight',
-        class: 'inline-replacement-flash'
-      }
-    )
-    setNewClass = ->
-      flash.setProperties({
-        type: 'highlight',
-        class: 'inline-replacement-flash flash-on'
-      })
-    setTimeout setNewClass, 50
-    setTimeout flash.destroy, 700
-
 
   nextMessage: () ->
     if @messages.length == 0
@@ -282,21 +265,36 @@ module.exports = Messenger =
     @selectAndMoveCursor(@messages[0])
 
 
-
   acceptSuggestion: () ->
     if @focus is null
       return
-
     if @focus.type == 'suggestion'
       newText = @focus.suggestion
-      range = @focus.range
+      range = @focus.getRange()
+
 
       activeBuffer = @activeEditor.getBuffer()
-      newRange = activeBuffer.setTextInRange(range, newText)
-
       @focus.destroy()
+      newRange = activeBuffer.setTextInRange(range, newText)
       if atom.config.get('inline-messenger.acceptSuggestionAnimation') is true
         @animateReplacementBlink(newRange)
+
+
+  animateReplacementBlink: (range) ->
+    marker = @activeEditor.markBufferRange(range)
+    flash = @activeEditor.decorateMarker(
+      marker
+      {
+        type: 'highlight',
+        class: 'inline-replacement-flash'
+      }
+    )
+    setNewClass = ->
+      flash.setProperties({
+        type: 'highlight',
+        class: 'inline-replacement-flash flash-on'
+      })
+    setTimeout setNewClass, 50
 
 
   provideInlineMessenger: () ->
