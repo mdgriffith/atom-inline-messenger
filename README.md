@@ -16,65 +16,19 @@ An example of a message with a code suggestion.  The code suggestion is then acc
 
 The [Inline Messenger Example](https://github.com/mdgriffith/atom-inline-messenger-example) has example code on how to work with this package.
 
-This package provides a service you can use in other Atom projects.  To use
-it, include `inline-messenger` in the `consumedServices` section of your `package.json`:
 
-```json
-{
-  "name": "my-package",
-  "consumedServices": {
-    "inline-messenger": {
-      "versions": {
-        "^1.0.0": "consumeInlineMessenger"
-      }
-    }
-  }
-}
-```
+## Design Considerations
 
-Then call methods on the service in your package's main module.
+The goal was to create a service for inline messaging as you see this functionality reimplemented in many packages.
 
-The `message` creates a message in the active editor.
+Design-wise, the priority was to be as unobtrusive to the code as possible.  For one line messages, the standard dotted underline was used to highlight a piece of code.
 
-```coffee
-module.exports =
-  activate: ->
-    @messages = []
+Though for multiline highlights this seemed to be obtrusive.  The solution was to have a dashed line along the gutter.  When the section of code is highlighted, it's obvious that the gutter annotation is connected to the highlighted text and the message.  It also doesn't interfere with the [git-diff](https://github.com/atom/git-diff) package.
 
-  consumeInlineMessenger: (messenger) ->
-    @messenger = messenger
+![Inline Messages](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-message.gif?token=AC54XW-QnrhkimH6dJcK5e67awSHD7wiks5VsvjswA%3D%3D)
 
-    @messages.push @messenger.message
-              range: [[22,0], [25,8]]
-              text: "A New Message"
-              severity: "warning"
+### Message Positioning
 
-    @messages.push @messenger.message
-              range: [[35,0], [35,8]]
-              text: "A New Code Suggestion"
-              suggestion: "myNewCodeSuggestion();"
+In case the user doesn't want messages to overlap with any code, you can set the message positioning setting to `Right` instead of `Below`.  
 
-  deactivate: ->
-    @messages.map (msg) -> msg.destroy()
-    @messages = []
-```
-
-## The Message Command
-
-The message method takes the following parameters
-  * `range` - The range to highlight in the editor
-  * `text` - The text to display in the message
-  * `severity` - Can be any of the following: info, warning, error, suggestion.  This will affect the coloring of the message.
-  * `suggestion` - Provide a code suggestion to replace the highlighted text.
-
-
-## Commands
-  * `next-message` -> Jumps to the next message.  The default keyboard shortcut is alt-down
-  * `prev-message` -> Jumps to the previous message.  The default keyboard shortcut is alt-up
-  * `accept-suggestion` -> If the current message is a code suggestion, this command will make the suggested changes for you.  The default is cmd-shift-a
-
-
-## Settings
-  * `Message Positioning` - For messages that span multiple lines, show them either below the highlighted code or to the right.  Defaults to below.
-  * `Show Keyboard Shortcut For Suggestions` - Show keyboard shortcut reminder at the bottom of a suggestion.  Defaults to true.
-  * `Accept Suggestion Animation` - Show a small highlight flash when suggested code is accepted.  Defaults to true.
+![Messages to the Right](https://raw.githubusercontent.com/mdgriffith/atom-inline-messenger-example/master/img/inline-message-right.gif)
