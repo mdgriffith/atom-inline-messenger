@@ -159,7 +159,7 @@ module.exports = Messenger =
       "#{cssIsUpCls}#{n}{ top:#{(n+1)*lineHeight*-1}px;}"
 
     cssIsRightCls = 'atom-overlay inline-message.is-right.right-'
-    styleList = styleList.concat (n for n in [0..250]).map (n) ->
+    styleList = styleList.concat (n for n in [0..250]).map (n) =>
       "#{cssIsRightCls}#{n}{ left:#{(n*@fontSizePx)*fontWidthHeightRatio}px; }"
     stylesheet = styleList.join("\n")
     ss = atom.styles.addStyleSheet(stylesheet)
