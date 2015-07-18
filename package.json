@@ -14,7 +14,7 @@
     "inline-messaging": {
       "description": "Send messages next to highlighted code.",
       "versions": {
-        "0.1.0": "provideInlineMessenger"
+        "1.0.0": "provideInlineMessenger"
       }
     }
   }
