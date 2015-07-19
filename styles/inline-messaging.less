@@ -35,7 +35,7 @@
   position: relative;
   &:after {
     left: 0px;
-    top: -7px;
+    top: -10px;
     border-style: solid;
     content: " ";
     height: 0;
@@ -59,11 +59,12 @@
 
 
 .message-with-severity(@color) {
-  background-color: @color;
+  border-top: 4px solid darken(@color, 10%);
+  background-color: average(@color, @inline-bg-color);
   &:after {
     border-color: @color;
   }
-  border-color: darken(@color, 10%);
+  // border-color: darken(@color, 10%);
   .badge {
     background-color: average(@color, @inline-text-color);
   }
@@ -72,6 +73,7 @@
 inline-message {
   background-color: @inline-bg-color;
   color: @inline-text-color;
+
   padding: 2px 8px;
   border-radius: @inline-border-radius;
   white-space: pre;
@@ -143,7 +145,7 @@ inline-message {
       margin-top: 5px;
       margin-bottom: 5px;
 
-      background-color: fade(@inline-bg-color, 40%);
+      background-color: fade(@inline-bg-color, 70%);
       color: @inline-text-color;
 
       border-bottom-right-radius: @inline-border-radius;
