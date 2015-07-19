@@ -107,19 +107,19 @@ inline-message {
   &.is-below {
     position: relative;
     margin-top: 8px;
-    margin-left: 3px; 
+    margin-left: 3px;
     .arrow_up();
     &.indentation-correction {
-      margin-left: 10px; 
+      margin-left: 10px;
     }
     &.empty-lastline-correction {
-      margin-top: -10px; 
+      margin-top: -10px;
     }
   }
   &.inline-suggestion {
     .suggested {
       position:relative;
-      
+
       margin-left: -6px;
       margin-right: -7px;
       padding-left: 6px;
@@ -154,91 +154,40 @@ inline-message {
 
 @unselectedFade: 10%;
 @selectedFade: 50%;
+.small-snippet(@color){
+  .region {
+    border-bottom: 1px dashed @color;
+    border-left: none;
+  }
+}
+.small-snippet-selected(@color){
+  .region {
+    background-color: fade(@color, @selectedFade);
+    border-bottom: 1px dashed @color;
+  }
+}
+//
+// .inline-highlight {
+//
+// }
+
 
 // Inline highlight and underline
 atom-text-editor::shadow .highlights .inline-message-selection-highlight {
-  .region {
-  }
+  // .region {
+  // }
   &.is-small-snippet {
-    .region {
-    }
+    .small-snippet(@inline-bg-color);
+
+    &.severity-info { .small-snippet(@background-color-info); }
+    &.severity-warning { .small-snippet(@background-color-warning); }
+    &.severity-error { .small-snippet(@background-color-error); }
+    &.severity-suggestion { .small-snippet(@background-color-success); }
     &.is-selected {
-      &.severity-info {
-        .region {
-          background-color: fade(@background-color-info, @selectedFade);
-          border-bottom: 1px dashed @background-color-info;
-        }
-      }
-      &.severity-warning {
-        .region {
-          background-color: fade(@background-color-warning, @selectedFade);
-          border-bottom: 1px dashed @background-color-warning;
-        }
-      }
-      &.severity-error {
-        .region {
-          background-color: fade(@background-color-error, @selectedFade);
-          border-bottom: 1px dashed @background-color-error;
-        }
-      }
-      &.severity-suggestion {
-        .region {
-          background-color: fade(@background-color-success, @selectedFade);
-          border-bottom: 1px dashed @background-color-success;
-        }
-      }
-    }
-    &.severity-info {
-      .region {
-        border-bottom: 1px dashed @background-color-info;
-        border-left: none;
-      }
-    }
-    &.severity-warning {
-      .region {
-        border-bottom: 1px dashed @background-color-warning;
-        border-left: none;
-      }
-    }
-    &.severity-error {
-      .region {
-        border-bottom: 1px dashed @background-color-error;
-        border-left: none;
-      }
-    }
-    &.severity-suggestion {
-      .region {
-        border-bottom: 1px dashed @background-color-success;
-        border-left: none;
-      }
-    }
-
-  }
-
-  &.is-selected {
-    &.severity-info {
-      .region {
-        background-color: fade(@background-color-info, @selectedFade);
-        border-bottom: none;
-      }
-    }
-    &.severity-warning {
-      .region {
-        background-color: fade(@background-color-warning, @selectedFade);
-        border-bottom: none;
-      }
-    }
-    &.severity-error {
-      .region {
-        background-color: fade(@background-color-error, @selectedFade);
-        border-bottom: none;
-      }
-    }
-    &.severity-suggestion {
-      .region {
-        background-color: fade(@background-color-success, @selectedFade);
-        border-bottom: none;
-      }
+      &.severity-info {.small-snippet-selected(@background-color-info);}
+      &.severity-warning {.small-snippet-selected(@background-color-warning);}
+      &.severity-error {.small-snippet-selected(@background-color-error);}
+      &.severity-suggestion {.small-snippet-selected(@background-color-success);}
     }
   }
 }
@@ -262,6 +211,14 @@ atom-text-editor::shadow .highlights .inline-message-selection-highlight {
 }
 
 // This class name mangling is because atom doesnt accept multiple classes per a line decoration
+atom-text-editor::shadow  .inline-message-multiline-highlight {
+  .line-idle(@inline-bg-color);
+}
+atom-text-editor::shadow  .inline-message-multiline-highlight-is-selected {
+  .line-idle(@inline-bg-color);
+  .line-selected(@inline-bg-color);
+}
+
 atom-text-editor::shadow  .inline-message-multiline-highlight-severity-info {
   .line-idle(@background-color-info);
 }
@@ -305,6 +262,6 @@ atom-text-editor::shadow .highlights .inline-replacement-flash {
   &.flash-on {
     .region {
       background-color: transparent;
-    } 
+    }
   }
 }

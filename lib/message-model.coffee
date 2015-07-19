@@ -22,6 +22,7 @@ class Message
     @indentLevel = 0
     @longestLineLength = 0
     @shortcut = shortcut
+    @showBadge = true
 
     if @editor is null or @editor == ''
       return
@@ -112,7 +113,8 @@ class Message
 
   formatHighlightClass: () ->
     classList = ["inline-message-selection-highlight"]
-    classList.push("severity-#{@severity}")
+    if @severity isnt null and @severity isnt undefined
+      classList.push("severity-#{@severity}")
     if @selected
       classList.push("is-selected")
     if @smallSnippet
@@ -125,9 +127,10 @@ class Message
     # multiple classes for a line decoration
     # Not that big of a deal, I suppose
     cls = "inline-message-multiline-highlight"
-    cls = cls + "-severity-#{@severity}"
+    if @severity isnt null and @severity isnt undefined
+      cls = "#{cls}-severity-#{@severity}"
     if @selected
-      cls = cls + "-is-selected"
+      cls = "#{cls}-is-selected"
     return cls
 
 

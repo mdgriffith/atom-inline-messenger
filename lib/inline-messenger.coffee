@@ -19,6 +19,10 @@ module.exports = Messenger =
       type: "boolean"
       default: true
       description: "Show a small highlight flash when suggested code is accepted."
+    showSeverityBadge:
+      type: "boolean"
+      default: false
+      description: "Show a text badge on every message that states its severity, sucha s 'Warning' or 'Error'"
 
   subscriptions: null
   messages:[]
@@ -195,8 +199,6 @@ module.exports = Messenger =
     if severity is null or severity is undefined
       if msgType == 'suggestion'
         severity = 'suggestion'
-      else
-        severity = 'info'
 
     pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
     kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
