@@ -67,6 +67,9 @@ module.exports = Messenger =
     @subscriptions.add atom.config.observe 'inline-messenger.messagePositioning', (newValue) =>
       @messages.map (msg) -> msg.update({positioning:newValue.toLowerCase()})
 
+    @subscriptions.add atom.config.observe 'inline-messenger.showSeverityBadge', (newValue) =>
+      @messages.map (msg) -> msg.update({showBadge:newValue})
+
 
   deactivate: ->
     @subscriptions.dispose()
@@ -200,8 +203,12 @@ module.exports = Messenger =
       if msgType == 'suggestion'
         severity = 'suggestion'
 
+    if badge is null or badge is undefined
+      badge = severity
+
     pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
     kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
+    showBadge = atom.config.get 'inline-messenger.showSeverityBadge'
     shortcut = atom.keymaps.findKeyBindings({command:'atom-inline-messenger:accept-suggestion'})[0]
     msg = new Message
       editor: @activeEditor
@@ -214,6 +221,8 @@ module.exports = Messenger =
       debug: debug
       showShortcuts: kbd
       shortcut: shortcut.keystrokes
+      showBadge: showBadge
+      badge: badge
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()

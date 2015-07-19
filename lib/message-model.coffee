@@ -3,7 +3,7 @@ MessageView = require './inline-message-view'
 
 
 class Message
-  constructor: ({editor, type, range, text, severity, badge, positioning, debug, suggestion, showShortcuts, shortcut}) ->
+  constructor: ({editor, type, range, text, severity, positioning, debug, suggestion, showShortcuts, shortcut, showBadge, badge}) ->
     @editor = editor
     @debug = debug
     @type = type
@@ -22,7 +22,8 @@ class Message
     @indentLevel = 0
     @longestLineLength = 0
     @shortcut = shortcut
-    @showBadge = true
+    @showBadge = showBadge
+    @badge = badge
 
     if @editor is null or @editor == ''
       return
@@ -191,6 +192,11 @@ class Message
     else
       @removeMessageBubbleClass('is-selected')
 
+    if @showBadge is true
+      @addMessageBubbleClass('show-badge')
+    else
+      @removeMessageBubbleClass('show-badge')
+
     if @smallSnippet is true
       @highlight.setProperties
         type:'highlight'
@@ -261,6 +267,11 @@ class Message
     if 'positioning' of newData
       if @positioning != newData.positioning
         @setPositioning(newData.positioning, @getRange())
+        requiresRefresh = true
+
+    if 'showBadge' of newData
+      if @showBadge != newData.showBadge
+        @showBadge = newData.showBadge
         requiresRefresh = true
 
     if requiresRefresh is true

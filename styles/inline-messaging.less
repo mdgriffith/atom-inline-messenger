@@ -57,6 +57,18 @@
   height:0px;
 }
 
+
+.message-with-severity(@color) {
+  background-color: @color;
+  &:after {
+    border-color: @color;
+  }
+  border-color: darken(@color, 10%);
+  .badge {
+    background-color: average(@color, @inline-text-color);
+  }
+}
+
 inline-message {
   background-color: @inline-bg-color;
   color: @inline-text-color;
@@ -65,37 +77,33 @@ inline-message {
   white-space: pre;
   display: none;
   box-shadow: none;
+  .message {
+    display: inline-block;
+  }
+  .badge {
+    display:none;
+    text-shadow: none;
+    // Colors are flipped for badges
+    background-color: @inline-text-color;
+    color: @inline-bg-color;
+    padding: 4px 6px;
+    border-radius: 2px;
+    margin: 2px 8px;
+    margin-left: 0;
+  }
+  &.show-badge {
+    .badge {
+      display: inline-block;
+    }
+  }
+
   &:after {
     border-color: @inline-bg-color;
   }
-  &.severity-info {
-    background-color: @background-color-info;
-    &:after {
-      border-color: @background-color-info;
-    }
-    border-color: darken(@background-color-info, 10%);
-  }
-  &.severity-warning {
-    background-color: @background-color-warning;
-    &:after {
-      border-color: @background-color-warning;
-    }
-    border-color: darken(@background-color-warning, 10%);
-  }
-  &.severity-error {
-    background-color: @background-color-error;
-    &:after {
-      border-color: @background-color-error;
-    }
-    border-color:  darken(@background-color-error, 10%);
-  }
-  &.severity-suggestion {
-    background-color: @background-color-success;
-    &:after {
-      border-color: @background-color-success;
-    }
-    border-color:  darken(@background-color-success, 10%);
-  }
+  &.severity-info { .message-with-severity(@background-color-info); }
+  &.severity-warning {.message-with-severity(@background-color-warning); }
+  &.severity-error { .message-with-severity(@background-color-error);  }
+  &.severity-suggestion { .message-with-severity(@background-color-success); }
   &.is-selected {
     display:inline-block;
   }

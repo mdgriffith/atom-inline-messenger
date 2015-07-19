@@ -23,20 +23,27 @@ class MessageView extends HTMLElement
     if msg.selected is true
       @classList.add("is-selected")
 
+    if msg.severity isnt null and msg.severity isnt undefined
+      badge = document.createElement('div')
+      badge.classList.add('badge')
+      badge.textContent = msg.badge
+      @appendChild(badge)
+    if msg.showBadge is true and msg.severity isnt null and msg.severity isnt undefined
+      @classList.add 'show-badge'
+
     message = document.createElement('div')
+    message.classList.add('message')
+
+
     if msg.debug is true
-      message.classList.add('message')
       message.textContent = msg.debugText()
       @appendChild(message)
 
     else if msg.type == 'message'
-      message.classList.add('message')
       message.textContent = msg.text
       @appendChild(message)
     else if msg.type == 'suggestion'
-      # Create message element
       message.textContent = msg.text
-      message.classList.add('message')
       @appendChild(message)
 
       suggestion = document.createElement('div')
