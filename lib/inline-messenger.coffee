@@ -94,13 +94,10 @@ module.exports = Messenger =
   selectUnderCursor: (cursor) ->
     cursor = @activeEditor.getLastCursor()
     cursorRange = cursor.getMarker().getBufferRange()
-    if cursorRange.start != cursorRange.end
-      @clearSelection()
-      return
-    cursorPos = cursor.getBufferPosition()
     closeMsgs = []
     for msg in @messages
-      if msg.getRange().containsPoint(cursorPos)
+      msgRange = msg.getRange()
+      if msgRange.containsPoint(cursorRange.start) and msgRange.containsPoint(cursorRange.end)
         closeMsgs.push(msg)
 
     if closeMsgs.length == 0
@@ -109,8 +106,8 @@ module.exports = Messenger =
       closeMsgs.sort (msg1, msg2) =>
         range1 = msg1.getRange()
         range2 = msg2.getRange()
-        delta1 = @pointDistance(cursorPos, range1.start)
-        delta2 = @pointDistance(cursorPos, range2.start)
+        delta1 = @pointDistance(cursorRange.start, range1.start)
+        delta2 = @pointDistance(cursorRange.start, range2.start)
         if delta1[0] < delta2[0]
           return -1
         else if delta1[0] > delta2[0]
