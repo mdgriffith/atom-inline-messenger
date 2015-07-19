@@ -22,7 +22,7 @@ module.exports = Messenger =
     showSeverityBadge:
       type: "boolean"
       default: false
-      description: "Show a text badge on every message that states its severity, sucha s 'Warning' or 'Error'"
+      description: "Show a text badge on every message that states its severity, such as 'Warning' or 'Error'"
 
   subscriptions: null
   messages:[]
