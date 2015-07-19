@@ -77,6 +77,8 @@ class Message
   requiresIndentCorrection: ->
     range = @getRange()
     @indentLevel = @editor.indentationForBufferRow(range.start.row)
+    if range.start.column > 0 and range.start.line == range.end.line
+      return false
     lineLength = @editor.lineTextForScreenRow(range.end.row).length
     rowSpan = Math.abs(range.end.row - range.start.row)
     return @indentLevel >= 1 or (rowSpan == 0 and lineLength == 0)
