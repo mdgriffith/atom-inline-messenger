@@ -7,7 +7,6 @@ class Message
     @editor = editor
     @debug = debug
     @type = type
-    @smallSnippet = range[0][0] == range[1][0]
     @text = text
     @suggestion = suggestion
     @severity = severity
@@ -30,6 +29,9 @@ class Message
 
     mark = @editor.markBufferRange(range,{invalidate: 'never', inlineMsg: true})
     @offsetFromTop = @longestLineInMarker(mark)
+
+    range = mark.getBufferRange()
+    @smallSnippet = range.start.row == range.end.row
 
     @positioning =  @setPositioning(positioning, mark.getBufferRange())
     anchorRange = @calculateAnchorRange(mark)
