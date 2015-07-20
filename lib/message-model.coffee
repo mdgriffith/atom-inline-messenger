@@ -3,7 +3,7 @@ MessageView = require './inline-message-view'
 
 
 class Message
-  constructor: ({editor, type, range, text, severity, positioning, debug, suggestion, showShortcuts, shortcut, showBadge, badge}) ->
+  constructor: ({editor, type, range, text, severity, positioning, debug, suggestion, showShortcuts, shortcut, showBadge, badge, trace}) ->
     @editor = editor
     @debug = debug
     @type = type
@@ -23,6 +23,7 @@ class Message
     @shortcut = shortcut
     @showBadge = showBadge
     @badge = badge
+    @trace = trace
 
     if @editor is null or @editor == ''
       return

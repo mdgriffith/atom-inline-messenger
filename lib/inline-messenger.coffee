@@ -190,7 +190,7 @@ module.exports = Messenger =
         return startComp
 
 
-  message: ({range, text, severity, suggestion, debug}) ->
+  message: ({range, text, html, severity, suggestion, trace,  debug}) ->
     if suggestion is null or suggestion is undefined
       msgType = 'message'
     else
@@ -220,6 +220,8 @@ module.exports = Messenger =
       shortcut: shortcut.keystrokes
       showBadge: showBadge
       badge: badge
+      trace: trace
+      html: html
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()

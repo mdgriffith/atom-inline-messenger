@@ -1,7 +1,6 @@
 class MessageView extends HTMLElement
 
   initialize: (msg) ->
-    # @classList.add('inline-message')
     if msg.type == 'suggestion'
       @classList.add('inline-suggestion')
 
@@ -34,18 +33,15 @@ class MessageView extends HTMLElement
     message = document.createElement('div')
     message.classList.add('message')
 
-
     if msg.debug is true
       message.textContent = msg.debugText()
       @appendChild(message)
-
-    else if msg.type == 'message'
-      message.textContent = msg.text
-      @appendChild(message)
-    else if msg.type == 'suggestion'
-      message.textContent = msg.text
+      return this
+    else
+      @renderContent message, msg
       @appendChild(message)
 
+    if msg.type == 'suggestion'
       suggestion = document.createElement('div')
       suggestion.classList.add('suggested')
       suggestion.textContent = msg.suggestion
@@ -58,12 +54,53 @@ class MessageView extends HTMLElement
         shortcut.innerHTML = "#{kbd} to accept suggestion"
         @appendChild(shortcut)
 
+    if msg.trace and msg.trace.length > 0
+      traceEl = document.createElement('div')
+      traceEl.classList.add('trace')
+      for tr in msg.trace
+        traceStep = document.createElement('div')
+        traceStep.classList.add('step')
+        @renderContent traceStep, tr
+        if tr.filePath
+          traceStep.appendChild @renderLink(tr, addPath=true)
+        traceEl.appendChild(traceStep)
+      @appendChild(traceEl)
+
     this
 
+  renderContent: (el, msg) ->
+    if msg.html
+      if typeof msg.html is 'string'
+        el.innerHTML = msg.html
+      else
+        if cloneNode
+          el.appendChild msg.html.cloneNode(true)
+        else
+          el.appendChild msg.html
+      el.appendChild(message)
+    else
+      el.textContent = msg.text
 
-  # Returns an object that can be retrieved when package is activated
-  serialize: ->
 
+  renderLink: (message, {addPath}) ->
+    displayFile = message.filePath
+    atom.project.getPaths().forEach (path) ->
+      return if message.filePath.indexOf(path) isnt 0 or displayFile isnt message.filePath # Avoid double replacing
+      displayFile = message.filePath.substr( path.length + 1 ) # Remove the trailing slash as well
+    el = document.createElement 'a'
+    el.classList.add('trace-link')
+    el.addEventListener 'click', =>
+      @goToLocation message.filePath, message.range
+    if message.range
+      el.textContent = "#{message.range.start.row + 1}:#{message.range.start.column + 1} "
+    # if addPath
+    el.textContent += "in #{displayFile}"
+    el
+
+  goToLocation: (file, range) ->
+    atom.workspace.open(file).then ->
+      return unless range
+      atom.workspace.getActiveTextEditor().setCursorBufferPosition(range.start)
 
   # Tear down any state and detach
   destroy: ->
