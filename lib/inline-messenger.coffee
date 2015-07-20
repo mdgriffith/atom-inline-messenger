@@ -225,6 +225,7 @@ module.exports = Messenger =
     @messages.push msg
     @sortMessages()
     @selectUnderCursor()
+    return msg
 
 
   nextMessage: () ->
