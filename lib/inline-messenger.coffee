@@ -189,6 +189,12 @@ module.exports = Messenger =
       else
         return startComp
 
+  equivalentMsg: (msg1, msg2) ->
+    props = ['text', 'html', 'severity', 'suggestion', 'debug']
+    allPropsareEqual = props.every (prop) -> msg1[prop] == msg2[prop]
+    if allPropsareEqual is true
+      return ms1.getRange().isEqual(msg2.range)
+    return false
 
   message: ({range, text, html, severity, suggestion, trace,  debug}) ->
     if suggestion is null or suggestion is undefined
@@ -202,6 +208,18 @@ module.exports = Messenger =
 
     if badge is null or badge is undefined
       badge = severity
+
+    for msg in @messages
+      if @equivalentMsg msg, {
+          text: text,
+          html: html,
+          severity: severity,
+          suggestion: suggestion,
+          trace: trace,
+          debug: debug
+        }
+        return msg
+
 
     pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
     kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
