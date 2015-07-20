@@ -68,6 +68,9 @@
   .badge {
     background-color: average(@color, @inline-text-color);
   }
+  .trace {
+    background-color: average(average(@color, @inline-bg-color), @inline-bg-color);
+  }
 }
 
 inline-message {
@@ -126,6 +129,7 @@ inline-message {
       margin-top: -10px;
     }
   }
+
   .trace-link {
     display: block;
     margin-left: 20px;
