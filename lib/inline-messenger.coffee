@@ -92,34 +92,29 @@ module.exports = Messenger =
 
 
   selectUnderCursor: (cursor) ->
+    if @messages.length == 0
+      return
+
     cursor = @activeEditor.getLastCursor()
     cursorRange = cursor.getMarker().getBufferRange()
-    closeMsgs = []
+    # closeMsgs = []
+    closest = null
+    closestRange = null
     for msg in @messages
       msgRange = msg.getRange()
       if msgRange.containsPoint(cursorRange.start) and msgRange.containsPoint(cursorRange.end)
-        closeMsgs.push(msg)
-
-    if closeMsgs.length == 0
-      @clearSelection()
-    else
-      closeMsgs.sort (msg1, msg2) =>
-        range1 = msg1.getRange()
-        range2 = msg2.getRange()
-        delta1 = @pointDistance(cursorRange.start, range1.start)
-        delta2 = @pointDistance(cursorRange.start, range2.start)
-        if delta1[0] < delta2[0]
-          return -1
-        else if delta1[0] > delta2[0]
-          return 1
+        if closest is null
+          closest = msg
+          closestRange = msgRange
         else
-          if delta1[1] < delta2[1]
-            return -1
-          else if delta1[1] > delta2[1]
-            return 1
-          else
-            return 0
-      @select(closeMsgs[0])
+          if closestRange.compare(msgRange) == 1 # this range starts after the argument or is contained by it.
+            closest = msg
+            closestRange = msgRange
+      else if closest isnt null
+        # Then we've passed the messages that are relevant
+        break
+    if closest isnt null
+      @select(closest)
 
 
   clear: ->
@@ -188,63 +183,6 @@ module.exports = Messenger =
           return rowSize2 - rowSize1
       else
         return startComp
-
-  equivalentMsg: (msg1, msg2) ->
-    props = ['text', 'html', 'severity', 'suggestion', 'debug']
-    allPropsareEqual = props.every (prop) -> msg1[prop] == msg2[prop]
-    if allPropsareEqual is true
-      return ms1.getRange().isEqual(msg2.range)
-    return false
-
-  message: ({range, text, html, severity, suggestion, trace,  debug}) ->
-    if suggestion is null or suggestion is undefined
-      msgType = 'message'
-    else
-      msgType = 'suggestion'
-
-    if severity is null or severity is undefined
-      if msgType == 'suggestion'
-        severity = 'suggestion'
-
-    if badge is null or badge is undefined
-      badge = severity
-
-    for msg in @messages
-      if @equivalentMsg msg, {
-          text: text,
-          html: html,
-          severity: severity,
-          suggestion: suggestion,
-          trace: trace,
-          debug: debug
-        }
-        return msg
-
-
-    pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
-    kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
-    showBadge = atom.config.get 'inline-messenger.showSeverityBadge'
-    shortcut = atom.keymaps.findKeyBindings({command:'atom-inline-messenger:accept-suggestion'})[0]
-    msg = new Message
-      editor: @activeEditor
-      type: msgType
-      range: range
-      suggestion: suggestion
-      positioning: pos
-      text: text
-      severity: severity
-      debug: debug
-      showShortcuts: kbd
-      shortcut: shortcut.keystrokes
-      showBadge: showBadge
-      badge: badge
-      trace: trace
-      html: html
-    @messages.push msg
-    @sortMessages()
-    @selectUnderCursor()
-    return msg
-
 
   nextMessage: () ->
     if @messages.length == 0
@@ -325,6 +263,91 @@ module.exports = Messenger =
       })
     setTimeout setNewClass, 50
 
+  equivalentMsg: (msg1, msg2) ->
+    props = ['text', 'html', 'severity', 'suggestion', 'debug']
+    allPropsareEqual = props.every (prop) -> msg1[prop] == msg2[prop]
+    if allPropsareEqual is true
+      return ms1.getRange().isEqual(msg2.range)
+    return false
+
+  addMessage: ({range, text, html, severity, suggestion, trace,  debug}) ->
+    if suggestion is null or suggestion is undefined
+      msgType = 'message'
+    else
+      msgType = 'suggestion'
+
+    if severity is null or severity is undefined
+      if msgType == 'suggestion'
+        severity = 'suggestion'
+
+    if badge is null or badge is undefined
+      badge = severity
+
+    for msg in @messages
+      if @equivalentMsg msg, {
+          text: text,
+          html: html,
+          severity: severity,
+          suggestion: suggestion,
+          trace: trace,
+          debug: debug
+        }
+        return msg
+
+    pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
+    kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
+    showBadge = atom.config.get 'inline-messenger.showSeverityBadge'
+    shortcut = atom.keymaps.findKeyBindings({command:'atom-inline-messenger:accept-suggestion'})[0]
+    msg = new Message
+      editor: @activeEditor
+      type: msgType
+      range: range
+      suggestion: suggestion
+      positioning: pos
+      text: text
+      severity: severity
+      debug: debug
+      showShortcuts: kbd
+      shortcut: shortcut.keystrokes
+      showBadge: showBadge
+      badge: badge
+      trace: trace
+      html: html
+    @messages.push msg
+    return msg
+
+
+  message: ({range, text, html, severity, suggestion, trace,  debug}) ->
+    msg = @addMessage
+      range:range
+      text:text
+      html:html
+      severity:severity
+      suggestion:suggestion
+      trace:trace
+      debug:debug
+    @sortMessages()
+    @selectUnderCursor()
+    return msg
+
+  # replaceMessages: (newMsgs, oldMsgs)
+    # 
+  manyMessages: (msgs) ->
+    newMsgs = msgs.map () ->
+      @addMessage
+        range:range
+        text:text
+        html:html
+        severity:severity
+        suggestion:suggestion
+        trace:trace
+        debug:debug
+    @sortMessages()
+    @selectUnderCursor()
+    return newMsgs
+
 
   provideInlineMessenger: () ->
     message: @message.bind(this)
+    manyMessages: @manyMessages.bind(this)
+    # replaceMessages: @replaceMessages.bind(this)
