@@ -35,9 +35,7 @@ class Message
     @smallSnippet = range.start.row == range.end.row
 
     @positioning =  @setPositioning(positioning, mark.getBufferRange())
-    anchorRange = @calculateAnchorRange(mark)
-    anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
-
+    
     if @smallSnippet is true
       @highlight = @editor.decorateMarker(
         mark
@@ -54,6 +52,29 @@ class Message
           class: @formatLineClass()
         }
       )
+
+
+
+  requiresIndentCorrection: ->
+    range = @getRange()
+    @indentLevel = @editor.indentationForBufferRow(range.start.row)
+    if range.start.column > 0 and range.start.line == range.end.line
+      return false
+    lineLength = @editor.lineTextForScreenRow(range.end.row).length
+    rowSpan = Math.abs(range.end.row - range.start.row)
+    return @indentLevel >= 1 or (rowSpan == 0 and lineLength == 0)
+
+  requiresLastLineCorrection: ->
+    range = @getRange()
+    lineLength = @editor.lineTextForScreenRow(range.end.row).length
+    rowSpan = Math.abs(range.end.row - range.start.row)
+    return lineLength == 0 and rowSpan != 0
+
+
+  showBubble: () ->
+    mark = @highlight.getMarker()
+    anchorRange = @calculateAnchorRange(mark)
+    anchor = @editor.markBufferRange(anchorRange, {invalidate: 'never'})
 
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
@@ -75,20 +96,9 @@ class Message
 
     mark.onDidChange => @updateMarkerPosition()
 
-  requiresIndentCorrection: ->
-    range = @getRange()
-    @indentLevel = @editor.indentationForBufferRow(range.start.row)
-    if range.start.column > 0 and range.start.line == range.end.line
-      return false
-    lineLength = @editor.lineTextForScreenRow(range.end.row).length
-    rowSpan = Math.abs(range.end.row - range.start.row)
-    return @indentLevel >= 1 or (rowSpan == 0 and lineLength == 0)
+  removeBubble: () ->
+    @messageBubble.destroy()
 
-  requiresLastLineCorrection: ->
-    range = @getRange()
-    lineLength = @editor.lineTextForScreenRow(range.end.row).length
-    rowSpan = Math.abs(range.end.row - range.start.row)
-    return lineLength == 0 and rowSpan != 0
 
 
   debugText: ->
@@ -193,8 +203,10 @@ class Message
 
   refresh: () ->
     if @selected is true
+      @showBubble()
       @addMessageBubbleClass('is-selected')
     else
+      @removeBubble()
       @removeMessageBubbleClass('is-selected')
 
     if @showBadge is true
@@ -269,15 +281,18 @@ class Message
         @selected = newData.selected
         requiresRefresh = true
 
+    # if @selected is true
     if 'positioning' of newData
       if @positioning != newData.positioning
         @setPositioning(newData.positioning, @getRange())
-        requiresRefresh = true
+        if @selected is true
+          requiresRefresh = true
 
     if 'showBadge' of newData
       if @showBadge != newData.showBadge
         @showBadge = newData.showBadge
-        requiresRefresh = true
+        if @selected is true
+          requiresRefresh = true
 
     if requiresRefresh is true
       @refresh()

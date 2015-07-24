@@ -184,6 +184,7 @@ module.exports = Messenger =
       else
         return startComp
 
+
   nextMessage: () ->
     if @messages.length == 0
       return
@@ -282,17 +283,21 @@ module.exports = Messenger =
 
     if badge is null or badge is undefined
       badge = severity
+    # for msg in @messages
+    #   if @equivalentMsg msg, {
+    #       text: text,
+    #       html: html,
+    #       severity: severity,
+    #       suggestion: suggestion,
+    #       trace: trace,
+    #       debug: debug,
+    #       range: range
+    #     }
+    #     console.log "equivalent"
+    #     return msg
+    #   else 
+    #     console.log "not equivalent"
 
-    for msg in @messages
-      if @equivalentMsg msg, {
-          text: text,
-          html: html,
-          severity: severity,
-          suggestion: suggestion,
-          trace: trace,
-          debug: debug
-        }
-        return msg
 
     pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
     kbd = atom.config.get 'inline-messenger.showKeyboardShortcutForSuggestion'
@@ -330,18 +335,19 @@ module.exports = Messenger =
     @selectUnderCursor()
     return msg
 
-  # replaceMessages: (newMsgs, oldMsgs)
-    # 
+
   manyMessages: (msgs) ->
-    newMsgs = msgs.map () ->
-      @addMessage
-        range:range
-        text:text
-        html:html
-        severity:severity
-        suggestion:suggestion
-        trace:trace
-        debug:debug
+    newMsgs = msgs.map (msg) =>
+      @addMessage({
+        range:msg.range
+        text:msg.text
+        html:msg.html
+        severity:msg.severity
+        suggestion:msg.suggestion
+        trace:msg.trace
+        debug:msg.debug
+      })
+      
     @sortMessages()
     @selectUnderCursor()
     return newMsgs
@@ -350,4 +356,3 @@ module.exports = Messenger =
   provideInlineMessenger: () ->
     message: @message.bind(this)
     manyMessages: @manyMessages.bind(this)
-    # replaceMessages: @replaceMessages.bind(this)
