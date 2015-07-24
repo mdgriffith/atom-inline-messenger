@@ -1,7 +1,7 @@
 {
   "name": "inline-messenger",
   "main": "./lib/inline-messenger.coffee",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Inline Messaging in the Atom Editor",
   "repository": "https://github.com/mdgriffith/atom-inline-messenger",
   "license": "MIT",
