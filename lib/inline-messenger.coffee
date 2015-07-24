@@ -115,6 +115,8 @@ module.exports = Messenger =
         break
     if closest isnt null
       @select(closest)
+    else
+      @clearSelection()
 
 
   clear: ->
