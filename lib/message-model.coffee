@@ -3,11 +3,12 @@ MessageView = require './inline-message-view'
 
 
 class Message
-  constructor: ({editor, type, range, text, severity, positioning, debug, suggestion, showShortcuts, shortcut, showBadge, badge, trace}) ->
+  constructor: ({editor, type, range, text, severity, positioning, debug, suggestion, showShortcuts, shortcut, showBadge, badge, trace, html}) ->
     @editor = editor
     @debug = debug
     @type = type
     @text = text
+    @html = html
     @suggestion = suggestion
     @severity = severity
     @badge = badge
@@ -52,7 +53,7 @@ class Message
           class: @formatLineClass()
         }
       )
-
+    @showBubble()
 
 
   requiresIndentCorrection: ->
@@ -203,10 +204,8 @@ class Message
 
   refresh: () ->
     if @selected is true
-      @showBubble()
       @addMessageBubbleClass('is-selected')
     else
-      @removeBubble()
       @removeMessageBubbleClass('is-selected')
 
     if @showBadge is true
@@ -281,18 +280,17 @@ class Message
         @selected = newData.selected
         requiresRefresh = true
 
-    # if @selected is true
     if 'positioning' of newData
       if @positioning != newData.positioning
         @setPositioning(newData.positioning, @getRange())
-        if @selected is true
-          requiresRefresh = true
+        # if @selected is true
+        requiresRefresh = true
 
     if 'showBadge' of newData
       if @showBadge != newData.showBadge
         @showBadge = newData.showBadge
-        if @selected is true
-          requiresRefresh = true
+        # if @selected is true
+        requiresRefresh = true
 
     if requiresRefresh is true
       @refresh()

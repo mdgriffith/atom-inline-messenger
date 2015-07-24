@@ -77,7 +77,6 @@ class MessageView extends HTMLElement
           el.appendChild msg.html.cloneNode(true)
         else
           el.appendChild msg.html
-      el.appendChild(message)
     else
       el.textContent = msg.text
 

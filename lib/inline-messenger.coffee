@@ -178,7 +178,8 @@ module.exports = Messenger =
         rowSize1 = Math.abs(range1.end.row - range1.start.row)
         rowSize2 = Math.abs(range2.end.row - range2.start.row)
         if (rowSize1 - rowSize2) == 0
-          return msg2.text.length - msg1.text.length
+          return 0
+          # return msg2.text.length - msg1.text.length
         else
           return rowSize2 - rowSize1
       else
@@ -280,7 +281,6 @@ module.exports = Messenger =
     if severity is null or severity is undefined
       if msgType == 'suggestion'
         severity = 'suggestion'
-
     if badge is null or badge is undefined
       badge = severity
     # for msg in @messages
@@ -293,10 +293,7 @@ module.exports = Messenger =
     #       debug: debug,
     #       range: range
     #     }
-    #     console.log "equivalent"
     #     return msg
-    #   else 
-    #     console.log "not equivalent"
 
 
     pos = atom.config.get('inline-messenger.messagePositioning').toLowerCase()
