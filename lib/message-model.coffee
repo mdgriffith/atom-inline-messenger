@@ -45,6 +45,13 @@ class Message
           class: @formatHighlightClass()
         }
       )
+      @editor.decorateMarker(
+        mark, 
+        {
+          type: 'line-number', 
+          class: "linter-highlight #{@severity}"
+        }
+      )
     else
       @highlight = @editor.decorateMarker(
         mark
@@ -53,6 +60,8 @@ class Message
           class: @formatLineClass()
         }
       )
+   
+
     @showBubble()
 
 
