@@ -29,7 +29,8 @@ class Message
     if @editor is null or @editor == ''
       return
 
-    mark = @editor.markBufferRange(range,{invalidate: 'never', inlineMsg: true})
+    mark = @editor.markBufferRange(range, {invalidate: 'inside', inlineMsg: true})
+
     @offsetFromTop = @longestLineInMarker(mark)
 
     range = mark.getBufferRange()
@@ -104,7 +105,7 @@ class Message
     if @debug is true
       @updateDebugText()
 
-    mark.onDidChange => @updateMarkerPosition()
+    mark.onDidChange (event) => @updateMarkerPosition(event)
 
   removeBubble: () ->
     @messageBubble.destroy()
@@ -249,7 +250,11 @@ class Message
       @positioning = pos
 
 
-  updateMarkerPosition: () ->
+  updateMarkerPosition: (event) ->
+
+    if event.isValid is false
+      @destroy()
+
     @correctIndentation = @requiresIndentCorrection()
     @correctLastLine = @requiresLastLineCorrection()
     if @correctIndentation is true
@@ -312,8 +317,10 @@ class Message
   destroy: ->
     @destroyed = true
     if @highlight isnt null
+      @highlight.getMarker().destroy()
       @highlight.destroy()
     if @messageBubble isnt null
+      @messageBubble.getMarker().destroy()
       @messageBubble.destroy()
 
 
