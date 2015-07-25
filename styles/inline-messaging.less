@@ -69,7 +69,7 @@
     background-color: average(@color, @inline-text-color);
   }
   .trace {
-    background-color: average(average(@color, @inline-bg-color), @inline-bg-color);
+    // background-color: average(average(@color, @inline-bg-color), @inline-bg-color);
   }
 }
 
@@ -131,35 +131,19 @@ inline-message {
   }
 
   .trace-link {
-    display: block;
-    margin-left: 20px;
-    color: average(@background-color-info, @inline-text-color);
+    // display: block;
+    // margin-left: 10px;
+    color: @inline-text-color;
   }
   &.inline-suggestion {
+    .suggestion-title {
+      margin-top: 5px;
+      font-weight: bold;
+    }
     .suggested {
       position:relative;
-
-      margin-left: -6px;
-      margin-right: -7px;
-      padding-left: 6px;
-      padding-right: 6px;
-
-      padding-top: 5px;
-      padding-bottom: 5px;
-
       font-family: Courier;
       white-space: pre;
-      border-left-width: 0;
-
-      margin-top: 5px;
-      margin-bottom: 5px;
-
-      background-color: fade(@inline-bg-color, 70%);
-      color: @inline-text-color;
-
-      border-bottom-right-radius: @inline-border-radius;
-      border-bottom-left-radius: @inline-border-radius;
-
     }
     .keyboard-shortcut-reminder {
       font-style: italic;

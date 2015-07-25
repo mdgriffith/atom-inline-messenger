@@ -41,18 +41,24 @@ class MessageView extends HTMLElement
       @renderContent message, msg
       @appendChild(message)
 
+   
     if msg.type == 'suggestion'
-      suggestion = document.createElement('div')
-      suggestion.classList.add('suggested')
-      suggestion.textContent = msg.suggestion
-      @appendChild(suggestion)
-
+      title = document.createElement('div')
+      title.classList.add('suggestion-title')
+      title.textContent = 'Code Suggestion '
       if msg.showShortcuts is true
-        shortcut = document.createElement('div')
+        shortcut = document.createElement('span')
         shortcut.classList.add('keyboard-shortcut-reminder')
         kbd = "<span class='kbd'>#{msg.shortcut}</span>"
-        shortcut.innerHTML = "#{kbd} to accept suggestion"
-        @appendChild(shortcut)
+        shortcut.innerHTML = "#{kbd} to accept"
+        title.appendChild(shortcut)
+      @appendChild(title)
+
+      suggestion = document.createElement('div')
+      suggestion.classList.add('suggested')
+
+      suggestion.textContent = msg.suggestion
+      @appendChild(suggestion)
 
     if msg.trace and msg.trace.length > 0
       traceEl = document.createElement('div')
@@ -65,7 +71,6 @@ class MessageView extends HTMLElement
           traceStep.appendChild @renderLink(tr, addPath=true)
         traceEl.appendChild(traceStep)
       @appendChild(traceEl)
-
     this
 
   renderContent: (el, msg) ->
@@ -92,7 +97,6 @@ class MessageView extends HTMLElement
       @goToLocation message.filePath, message.range
     if message.range
       el.textContent = "#{message.range.start.row + 1}:#{message.range.start.column + 1} "
-    # if addPath
     el.textContent += "in #{displayFile}"
     el
 
