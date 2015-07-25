@@ -50,7 +50,7 @@ class Message
         mark, 
         {
           type: 'line-number', 
-          class: "linter-highlight #{@severity}"
+          class: "inline-gutter severity-#{@severity}"
         }
       )
     else

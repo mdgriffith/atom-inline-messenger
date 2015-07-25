@@ -1,6 +1,7 @@
 
 @import "ui-variables";
 @import "syntax-variables";
+@import 'octicon-utf-codes';
 
 
 @inline-border-radius: 0px;
@@ -8,6 +9,7 @@
 @inline-bg-color: @syntax-text-color;
 @inline-badge-text-color: @syntax-background-color;
 
+@lineFade: 15%;
 
 .arrow_left {
   position: relative;
@@ -29,7 +31,6 @@
 
   }
 }
-
 
 .arrow_up {
   position: relative;
@@ -131,8 +132,6 @@ inline-message {
   }
 
   .trace-link {
-    // display: block;
-    // margin-left: 10px;
     color: @inline-text-color;
   }
   &.inline-suggestion {
@@ -154,56 +153,85 @@ inline-message {
   }
 }
 
+// ---------------------------------
+// Gutter Decorations
+// ---------------------------------
 
-
-@unselectedFade: 10%;
-@selectedFade: 50%;
-.small-snippet(@color){
-  .region {
-    border-bottom: 1px dashed @color;
-    border-left: none;
-  }
-}
-.small-snippet-selected(@color){
-  .region {
-    background-color: fade(@color, @selectedFade);
-    border-bottom: 1px dashed @color;
-  }
-}
-//
-// .inline-highlight {
-//
-// }
-
-
-// Inline highlight and underline
-atom-text-editor::shadow .highlights .inline-message-selection-highlight {
-  // .region {
-  // }
-  &.is-small-snippet {
-    .small-snippet(@inline-bg-color);
-
-    &.severity-info { .small-snippet(@background-color-info); }
-    &.severity-warning { .small-snippet(@background-color-warning); }
-    &.severity-error { .small-snippet(@background-color-error); }
-    &.severity-suggestion { .small-snippet(@background-color-success); }
-    &.is-selected {
-      &.severity-info {.small-snippet-selected(@background-color-info);}
-      &.severity-warning {.small-snippet-selected(@background-color-warning);}
-      &.severity-error {.small-snippet-selected(@background-color-error);}
-      &.severity-suggestion {.small-snippet-selected(@background-color-success);}
+.color-gutter-icon(@color){
+  .icon-right{
+    visibility: visible;
+    &::before{
+      content: @primitive-dot;
+      font-size: 1.1em;
+      color: @color;
     }
   }
 }
 
 
+atom-text-editor::shadow .inline-gutter {
+  .color-gutter-icon(@inline-bg-color);
+  &.severity-info {
+    .color-gutter-icon(@background-color-info);
+  }
+  &.severity-suggestion {
+    .color-gutter-icon(@background-color-success);
+  }
+  &.severity-warning {
+    .color-gutter-icon(@background-color-warning);
+  }
+  &.severity-error {
+    .color-gutter-icon(@background-color-error);
+  }
+}
+
+
+
+// ---------------------------------
+// Single line message, line decoration
+// ----------------------------------
+
+
+@selectedFade: 15%;
+.small-snippet(@color, @z){
+  .region {
+    border-bottom: 1px dashed @color;
+    border-left: none;
+    z-index: @z;
+  }
+}
+.small-snippet-selected(@color, @z){
+  .region {
+    background-color: fade(@color, @lineFade);
+    border-bottom: 1px dashed @color;
+    z-index: @z;
+  }
+}
+
+
+// Inline highlight and underline
+atom-text-editor::shadow .highlights .inline-message-selection-highlight {
+  &.is-small-snippet {
+    .small-snippet(@inline-bg-color, 0);
+    &.severity-info {        .small-snippet(@background-color-info, 0); }
+    &.severity-warning {     .small-snippet(@background-color-warning, 1); }
+    &.severity-error {       .small-snippet(@background-color-error, 2); }
+    &.severity-suggestion {  .small-snippet(@background-color-success, 3); }
+    &.is-selected {
+      &.severity-info {      .small-snippet-selected(@background-color-info, 4);}
+      &.severity-warning {   .small-snippet-selected(@background-color-warning, 4);}
+      &.severity-error {     .small-snippet-selected(@background-color-error, 4);}
+      &.severity-suggestion {.small-snippet-selected(@background-color-success, 4);}
+    }
+  }
+}
 
 
 // ---------------------------------
 // Multiline message, line decoration
 // ----------------------------------
 
-@lineFade: 15%;
+
 .line-idle(@color) {
   padding-left: 8px;
   margin-left: -10px;
