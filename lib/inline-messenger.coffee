@@ -144,6 +144,7 @@ module.exports = Messenger =
   selectAndMoveCursor: (msg) ->
     @activeEditor.setCursorBufferPosition(msg.getRange().start, {autoscroll:false})
     @activeEditor.scrollToCursorPosition()
+    @select(msg)
 
 
   updateStyle: () ->
@@ -214,9 +215,9 @@ module.exports = Messenger =
       for msg in @messages
         range = msg.getRange()
         if afterFocused is true
-          if range.start.row >= cursorBuffPos.row
-            @selectAndMoveCursor(msg)
-            return
+          # if range.start.row >= cursorBuffPos.row
+          @selectAndMoveCursor(msg)
+          return
         if msg.selected is true
           afterFocused = true
     else
@@ -237,9 +238,9 @@ module.exports = Messenger =
       for msg in @messages.slice(0).reverse()
         range = msg.getRange()
         if afterFocused is true
-          if range.start.row <= cursorBuffPos.row
-            @selectAndMoveCursor(msg)
-            return
+          # if range.start.row <= cursorBuffPos.row
+          @selectAndMoveCursor(msg)
+          return
         if msg.selected is true
           afterFocused = true
     else
@@ -248,7 +249,7 @@ module.exports = Messenger =
         if range.start.row <= cursorBuffPos.row
           @selectAndMoveCursor(msg)
           return
-    @selectAndMoveCursor(@messages[0])
+    @selectAndMoveCursor(@messages[@messages.length-1])
 
 
   acceptSuggestion: () ->
