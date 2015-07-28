@@ -95,9 +95,10 @@ class MessageView extends HTMLElement
     el.classList.add('trace-link')
     el.addEventListener 'click', =>
       @goToLocation message.filePath, message.range
+    el.textContent = " #{displayFile}"
     if message.range
-      el.textContent = "#{message.range.start.row + 1}:#{message.range.start.column + 1} "
-    el.textContent += "in #{displayFile}"
+      el.textContent += " #{message.range.start.row + 1}:#{message.range.start.column + 1} "
+    
     el
 
   goToLocation: (file, range) ->
