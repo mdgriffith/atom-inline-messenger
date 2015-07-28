@@ -95,6 +95,9 @@ module.exports = Messenger =
     if @messages.length == 0
       return
 
+    if not @activeEditor
+      return
+
     cursor = @activeEditor.getLastCursor()
     cursorRange = cursor.getMarker().getBufferRange()
     # closeMsgs = []
