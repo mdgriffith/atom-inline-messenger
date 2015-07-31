@@ -15,7 +15,7 @@
   position: relative;
   &:after {
     right: 100%;
-    top: 0%;
+    top: -4px;
     border-style: solid;
     content: " ";
     height: 0;
@@ -63,7 +63,7 @@
   border-top: 4px solid darken(@color, 10%);
   background-color: average(@color, @inline-bg-color);
   &:after {
-    border-color: @color;
+    border-color: darken(@color, 10%);
   }
   // border-color: darken(@color, 10%);
   .badge {
