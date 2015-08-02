@@ -5,10 +5,10 @@ class MessageView extends HTMLElement
       @classList.add('inline-suggestion')
 
     @classList.add("severity-#{msg.severity}")
-    if msg.correctIndentation is true
+    if msg.correctIndentation
       @classList.add('indentation-correction')
 
-    if msg.correctLastLine is true
+    if msg.correctLastLine
       @classList.add('empty-lastline-correction')
 
     if msg.positioning == "below"
@@ -19,21 +19,21 @@ class MessageView extends HTMLElement
       @classList.add("up-0")
       # @classList.add("up-#{msg.offsetFromTop}")
 
-    if msg.selected is true
+    if msg.selected
       @classList.add("is-selected")
 
-    if msg.severity isnt null and msg.severity isnt undefined
+    if msg.severity
       badge = document.createElement('div')
       badge.classList.add('badge')
       badge.textContent = msg.badge
       @appendChild(badge)
-    if msg.showBadge is true and msg.severity isnt null and msg.severity isnt undefined
-      @classList.add 'show-badge'
+      if msg.showBadge
+        @classList.add 'show-badge'
 
     message = document.createElement('div')
     message.classList.add('message')
 
-    if msg.debug is true
+    if msg.debug
       message.textContent = msg.debugText()
       @appendChild(message)
       return this
