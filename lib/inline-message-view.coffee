@@ -78,10 +78,7 @@ class MessageView extends HTMLElement
       if typeof msg.html is 'string'
         el.innerHTML = msg.html
       else
-        if cloneNode
-          el.appendChild msg.html.cloneNode(true)
-        else
-          el.appendChild msg.html
+        el.appendChild msg.html
     else
       el.textContent = msg.text
 
