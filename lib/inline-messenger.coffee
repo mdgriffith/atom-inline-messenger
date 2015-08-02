@@ -37,22 +37,22 @@ module.exports = Messenger =
 
     # Register commands
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:accept-suggestion': (event) =>
+      'atom-inline-messenger:accept-suggestion': =>
         @acceptSuggestion()
 
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:next-message': (event) =>
+      'atom-inline-messenger:next-message': =>
         @nextMessage()
 
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:prev-message': (event) =>
+      'atom-inline-messenger:prev-message': =>
         @prevMessage()
 
     @activeEditor = atom.workspace.getActiveTextEditor()
     @subscriptions.add @cursorMovementSubscription()
     @updateStyle()
 
-    @subscriptions.add atom.workspace.onDidChangeActivePaneItem (item) =>
+    @subscriptions.add atom.workspace.onDidChangeActivePaneItem =>
       @activeEditor = atom.workspace.getActiveTextEditor()
       @subscriptions.add @cursorMovementSubscription()
 
@@ -88,7 +88,7 @@ module.exports = Messenger =
 
   cursorMovementSubscription: () ->
     if @activeEditor
-      @activeEditor.onDidChangeCursorPosition (cursor) => @selectUnderCursor()
+      @activeEditor.onDidChangeCursorPosition (cursor) => @selectUnderCursor(cursor)
 
 
   selectUnderCursor: (cursor) ->
@@ -98,7 +98,7 @@ module.exports = Messenger =
     if not @activeEditor
       return
 
-    cursor = @activeEditor.getLastCursor()
+    cursor = cursor or @activeEditor.getLastCursor()
     cursorRange = cursor.getMarker().getBufferRange()
     # closeMsgs = []
     closest = null
@@ -123,15 +123,15 @@ module.exports = Messenger =
 
 
   clear: ->
-    @messages.map (msg) -> msg.destroy()
+    @messages.forEach (msg) -> msg.destroy()
 
 
   removeDestroyed: (messages) ->
-    return (msg for msg in messages when msg.destroyed isnt true)
+    return (msg for msg in messages when not msg.destroyed)
 
 
   clearSelection: () ->
-    @messages.map (msg) -> msg.update({'selected':false})
+    @messages.forEach (msg) -> msg.update({'selected':false})
     @focus = null
 
 
@@ -167,7 +167,7 @@ module.exports = Messenger =
     styleList = styleList.concat (n for n in [0..250]).map (n) =>
       "#{cssIsRightCls}#{n}{ left:#{(n*@fontSizePx)*fontWidthHeightRatio}px; }"
     stylesheet = styleList.join("\n")
-    ss = atom.styles.addStyleSheet(stylesheet)
+    atom.styles.addStyleSheet(stylesheet)
 
 
   severityPriority: (severity) ->
@@ -211,12 +211,11 @@ module.exports = Messenger =
     if @messages.length == 0
       return
     # Find the first message after the cursor,
-    # and only after the selected oned
+    # and only after the selected ones
     cursorBuffPos = @activeEditor.getCursorBufferPosition()
     if @focus isnt null
       afterFocused = false
       for msg in @messages
-        range = msg.getRange()
         if afterFocused is true
           # if range.start.row >= cursorBuffPos.row
           @selectAndMoveCursor(msg)
@@ -239,7 +238,6 @@ module.exports = Messenger =
     if @focus isnt null
       afterFocused = false
       for msg in @messages.slice(0).reverse()
-        range = msg.getRange()
         if afterFocused is true
           # if range.start.row <= cursorBuffPos.row
           @selectAndMoveCursor(msg)
@@ -290,7 +288,7 @@ module.exports = Messenger =
     props = ['text', 'html', 'severity', 'suggestion', 'debug']
     allPropsareEqual = props.every (prop) -> msg1[prop] == msg2[prop]
     if allPropsareEqual is true
-      return ms1.getRange().isEqual(msg2.range)
+      return msg1.getRange().isEqual(msg2.range)
     return false
 
   addMessage: ({range, text, html, severity, suggestion, trace,  debug}) ->
