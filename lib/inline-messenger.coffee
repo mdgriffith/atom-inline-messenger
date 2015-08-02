@@ -37,22 +37,22 @@ module.exports = Messenger =
 
     # Register commands
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:accept-suggestion': (event) =>
+      'atom-inline-messenger:accept-suggestion': =>
         @acceptSuggestion()
 
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:next-message': (event) =>
+      'atom-inline-messenger:next-message': =>
         @nextMessage()
 
     @subscriptions.add atom.commands.add 'atom-text-editor',
-      'atom-inline-messenger:prev-message': (event) =>
+      'atom-inline-messenger:prev-message': =>
         @prevMessage()
 
     @activeEditor = atom.workspace.getActiveTextEditor()
     @subscriptions.add @cursorMovementSubscription()
     @updateStyle()
 
-    @subscriptions.add atom.workspace.onDidChangeActivePaneItem (item) =>
+    @subscriptions.add atom.workspace.onDidChangeActivePaneItem =>
       @activeEditor = atom.workspace.getActiveTextEditor()
       @subscriptions.add @cursorMovementSubscription()
 
@@ -88,7 +88,7 @@ module.exports = Messenger =
 
   cursorMovementSubscription: () ->
     if @activeEditor
-      @activeEditor.onDidChangeCursorPosition (cursor) => @selectUnderCursor()
+      @activeEditor.onDidChangeCursorPosition (cursor) => @selectUnderCursor(cursor)
 
 
   selectUnderCursor: (cursor) ->
@@ -98,7 +98,7 @@ module.exports = Messenger =
     if not @activeEditor
       return
 
-    cursor = @activeEditor.getLastCursor()
+    cursor = cursor or @activeEditor.getLastCursor()
     cursorRange = cursor.getMarker().getBufferRange()
     # closeMsgs = []
     closest = null
@@ -123,7 +123,7 @@ module.exports = Messenger =
 
 
   clear: ->
-    @messages.map (msg) -> msg.destroy()
+    @messages.forEach (msg) -> msg.destroy()
 
 
   removeDestroyed: (messages) ->
@@ -131,7 +131,7 @@ module.exports = Messenger =
 
 
   clearSelection: () ->
-    @messages.map (msg) -> msg.update({'selected':false})
+    @messages.forEach (msg) -> msg.update({'selected':false})
     @focus = null
 
 
