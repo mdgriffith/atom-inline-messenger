@@ -77,7 +77,8 @@ module.exports = Messenger =
 
 
   serialize: ->
-    messageViewState: @messageView.serialize()
+    if @messageView
+      messageViewState: @messageView.serialize()
 
 
   pointDistance: (point1, point2) ->
